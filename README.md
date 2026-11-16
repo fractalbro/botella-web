@@ -12,7 +12,7 @@ Quien se registra deja nombre, WhatsApp y distrito. La función `join_waitlist` 
 ## Puesta en marcha
 1. Supabase > SQL Editor: pegar `supabase/waitlist.sql` y Run.
 2. Vercel: Add New > Project > importar `botella-web`, Framework: Other, sin build.
-3. Si el dominio no queda como `botella-web.vercel.app`, cambiar esa URL en las etiquetas `og:` y `canonical` de `index.html` (WhatsApp necesita la URL completa de la imagen).
+3. Si el dominio cambia, cambiar la URL actual (botella-web-snowy.vercel.app) en las etiquetas `og:` y `canonical` de `index.html` (WhatsApp necesita la URL completa de la imagen).
 
 ## Desde el panel de Supabase
 - Ver registros: `select created_at, name, phone, district, ref, granted from waitlist order by created_at desc;`
