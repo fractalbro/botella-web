@@ -232,7 +232,7 @@ details p{margin:-6px 0 24px;color:var(--muted);max-width:52ch;font-size:16.5px}
   .steps{grid-template-columns:repeat(4,1fr)}
   .step{min-height:340px}
   .vlist{grid-template-columns:1fr 1fr}
-  .cgrid{grid-template-columns:repeat(4,1fr);gap:28px}
+  .cgrid{grid-template-columns:repeat(3,1fr);gap:28px}
   .join-card{display:grid;grid-template-columns:1fr 1fr;gap:64px;padding:64px;margin:0}
   .join-card .form,.join-card .done{margin-top:0}
   .faq .wrap{max-width:900px}
