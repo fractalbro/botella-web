@@ -71,8 +71,8 @@
       for (let x = 0; x <= W; x += 8) { const y = y0 + Math.sin(x * (.012 - k * .006) + t * sp + j) * amp; x ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
       ctx.stroke();
     }
-    // tres orillas en el horizonte
-    [.2, .5, .86].forEach((x, i) => { ctx.globalAlpha = .45 + Math.sin(t * 2 + i) * .3; ctx.fillStyle = '#7FD8C9'; ctx.shadowColor = '#7FD8C9'; ctx.shadowBlur = 14; ctx.beginPath(); ctx.arc(W * x, hz - 1, 2.6, 0, 7); ctx.fill(); });
+    // ocho orillas en el horizonte
+    [.06, .18, .3, .42, .55, .67, .8, .93].forEach((x, i) => { ctx.globalAlpha = .45 + Math.sin(t * 2 + i) * .3; ctx.fillStyle = '#7FD8C9'; ctx.shadowColor = '#7FD8C9'; ctx.shadowBlur = 14; ctx.beginPath(); ctx.arc(W * x, hz - 1, 2.6, 0, 7); ctx.fill(); });
     ctx.shadowBlur = 0; ctx.globalAlpha = 1;
     // línea del horizonte
     ctx.fillStyle = 'rgba(244,239,231,.12)'; ctx.fillRect(0, hz, W, 1);
@@ -144,7 +144,7 @@
   adult.addEventListener('click', () => adult.setAttribute('aria-checked', adult.getAttribute('aria-checked') !== 'true'));
   const shareText = invite => {
     const url = `${location.origin}/${invite ? '?de=' + invite : ''}`;
-    return `Te mando una botella 🌊 Es una app de Lima donde grabas una pregunta con tu voz y te responden tres personas. Sin fotos. Entra aquí: ${url}`;
+    return `Te mando una botella 🌊 Es una app de Lima donde grabas una pregunta con tu voz y la escuchan ocho personas de tus mismos temas. Sin fotos. Entra aquí: ${url}`;
   };
   const show = r => {
     form.hidden = true; $('.join-head').hidden = true; $('#done').hidden = false;

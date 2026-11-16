@@ -118,7 +118,7 @@ section{position:relative}
 .shores{width:100%;max-width:240px}
 .shores .hz{position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(127,216,201,.6),transparent)}
 .shores i{position:absolute;top:calc(50% - 5px);width:10px;height:10px;border-radius:50%;background:var(--a);box-shadow:0 0 16px var(--a);animation:glow 2.4s ease-in-out infinite}
-.shores i:nth-child(1){left:18%}.shores i:nth-child(2){left:50%;animation-delay:.4s}.shores i:nth-child(3){left:82%;animation-delay:.8s}
+.shores i:nth-child(1){left:4%;animation-delay:0.00s}.shores i:nth-child(2){left:17%;animation-delay:0.25s}.shores i:nth-child(3){left:30%;animation-delay:0.50s}.shores i:nth-child(4){left:43%;animation-delay:0.75s}.shores i:nth-child(5){left:56%;animation-delay:1.00s}.shores i:nth-child(6){left:69%;animation-delay:1.25s}.shores i:nth-child(7){left:82%;animation-delay:1.50s}.shores i:nth-child(8){left:95%;animation-delay:1.75s}
 @keyframes glow{50%{opacity:.35;transform:scale(.7)}}
 .orbs i{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff9,transparent 45%),var(--c,var(--a));box-shadow:0 0 30px -4px var(--c,var(--a));animation:talk 1.6s ease-in-out infinite}
 .orbs i:nth-child(2){--c:var(--amber);margin-left:-14px;animation-delay:.8s}
