@@ -84,17 +84,17 @@
 
   /* ---------- voces de ejemplo ---------- */
   const V = [
-    { id: 'majo', name: 'Majo', d: 'Barranco', kind: 'Pregunta', c: '#7FD8C9', secs: 14, q: '¿Qué harías un domingo si nadie en esta ciudad te conociera?', pk: [1, .48, .77, .57, .82, .74, .67, .41, .35, .91, .76, .58, .92, .51, .68, .28, .88, .57, .71, .74, .53, .33, .89, .5, .38, .86, 1, .48] },
-    { id: 'leo', name: 'Leo', d: 'Lince', kind: 'Confesión', c: '#FFC24B', secs: 13, q: 'Me mudé a Lima hace tres meses y todavía no tengo con quién ir al cine.', pk: [.67, .42, .32, .41, 1, .48, .49, .29, .59, .6, .53, .39, .4, .16, .6, .49, .4, .39, .44, .41, .67, .55, .61, .52, .4, .3, .42, .18] },
-    { id: 'rocio', name: 'Rocío', d: 'Jesús María', kind: 'Historia', c: '#FF70A9', secs: 15, q: 'Lo más raro que me pasó en una combi.', pk: [.64, .72, .92, .62, .74, .42, .74, .72, .95, .51, .6, .86, .52, .65, .73, .75, .7, .57, .73, .79, .82, .84, 1, .54, .91, .79, .61, .62] },
-    { id: 'diego', name: 'Diego', d: 'San Borja', kind: 'Confesión', c: '#8E8CFF', secs: 12, q: 'Trabajo desde casa y a veces paso días sin hablar con nadie.', pk: [1, .87, .93, .83, .7, .85, .7, .58, .68, .7, .63, .52, .25, .92, .64, .64, .57, .36, .26, .77, .73, .7, .61, .42, .89, .84, .57, .36] }
+    { id: 'majo', name: 'Majo', d: 'alguien que ama la música', kind: 'Pregunta', c: '#7FD8C9', secs: 14, q: '¿Qué harías un domingo si nadie en esta ciudad te conociera?', pk: [1, .48, .77, .57, .82, .74, .67, .41, .35, .91, .76, .58, .92, .51, .68, .28, .88, .57, .71, .74, .53, .33, .89, .5, .38, .86, 1, .48] },
+    { id: 'leo', name: 'Leo', d: 'alguien que ama el cine', kind: 'Confesión', c: '#FFC24B', secs: 13, q: 'Me mudé a Lima hace tres meses y todavía no tengo con quién ir al cine.', pk: [.67, .42, .32, .41, 1, .48, .49, .29, .59, .6, .53, .39, .4, .16, .6, .49, .4, .39, .44, .41, .67, .55, .61, .52, .4, .3, .42, .18] },
+    { id: 'rocio', name: 'Rocío', d: 'alguien que ama la comida', kind: 'Historia', c: '#FF70A9', secs: 15, q: 'Lo más raro que me pasó en una combi.', pk: [.64, .72, .92, .62, .74, .42, .74, .72, .95, .51, .6, .86, .52, .65, .73, .75, .7, .57, .73, .79, .82, .84, 1, .54, .91, .79, .61, .62] },
+    { id: 'diego', name: 'Diego', d: 'alguien que ama la tecnología', kind: 'Confesión', c: '#8E8CFF', secs: 12, q: 'Trabajo desde casa y a veces paso días sin hablar con nadie.', pk: [1, .87, .93, .83, .7, .85, .7, .58, .68, .7, .63, .52, .25, .92, .64, .64, .57, .36, .26, .77, .73, .7, .61, .42, .89, .84, .57, .36] }
   ];
   const fmt = s => `0:${String(Math.round(s)).padStart(2, '0')}`;
   const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>';
   const PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>';
-  $('#vlist').innerHTML = V.map(v => `<button class="vc rv" type="button" data-v="${v.id}" style="--c:${v.c}" aria-label="Escuchar la botella de ${v.name}: ${v.q}">
+  $('#vlist').innerHTML = V.map(v => `<button class="vc rv" type="button" data-v="${v.id}" style="--c:${v.c}" aria-label="Escuchar: ${v.q}. ${v.kind} de ${v.d}">
     <span class="pp">${PLAY}</span>
-    <span><span class="meta"><b>${v.name}</b><span>${v.d}</span><span>·</span><span>${v.kind}</span></span>
+    <span><span class="meta"><span><b>${v.kind}</b> de ${v.d}</span></span>
     <span class="q" style="display:block">${v.q}</span>
     <span class="bars" style="display:flex">${v.pk.map(p => `<i style="height:${Math.max(14, p * 100)}%"></i>`).join('')}<span class="t">${fmt(v.secs)}</span></span></span>
   </button>`).join('');
@@ -121,7 +121,7 @@
     stop(); cur = id; au.src = `/v/${id}-say.mp3`; au.currentTime = 0;
     au.play().catch(() => stop());
     const el = card(id); el.classList.add('on'); el.querySelector('.pp').innerHTML = PAUSE;
-    if (id === heroBtn.dataset.play) { heroBtn.classList.add('on'); heroBtn.querySelector('span').textContent = 'Escuchando a Majo…'; }
+    if (id === heroBtn.dataset.play) { heroBtn.classList.add('on'); heroBtn.querySelector('span').textContent = 'Escuchando…'; }
   };
   au.addEventListener('timeupdate', paint);
   au.addEventListener('ended', stop);
