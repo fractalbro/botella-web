@@ -96,6 +96,7 @@
 
   // Botella principal (la que lanzas).
   const main = el('use', { href: '#btl', opacity: 0 }, layer);
+  const splash = el('ellipse', { cx: P(0.5, 0.3)[0], cy: P(0.5, 0.3)[1], rx: 0, ry: 0, fill: 'none', stroke: '#C9F5EE', 'stroke-width': 1, opacity: 0 }, layer);
 
   // Reloj de la marea (6 h).
   const clockAt = P(0.2, 1.4, 2.2);
@@ -168,7 +169,7 @@
     return [lerp(a[1], b[1], t), lerp(a[2], b[2], t), lerp(a[3], b[3], t)];
   };
 
-  const spot = P(1.7, 1.7); // donde cae la botella al mar
+  const spot = P(0.5, 0.3); // donde cae la botella al mar
   const place = (node, x, y, rot = 0, s = 1) => node.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${rot.toFixed(1)}) scale(${s})`);
   let lastStep = -1;
 
@@ -181,7 +182,7 @@
     const rec = seg(p, .01, .1);
     const recOn = p < T[1] + .02;
     barEls.forEach((b, i) => {
-      const h = BAR[i] * 12 * ease(clamp(rec * 1.4 - i * .06)) * (recOn ? 1 : 1 - seg(p, T[1], T[1] + .03));
+      const h = BAR[i] * 12 * ease(clamp(rec * 1.4 - i * .06)) * (1 - seg(p, T[1] - .025, T[1]));
       b.setAttribute('height', h.toFixed(1)); b.setAttribute('y', (-h / 2).toFixed(1));
     });
     micRing.setAttribute('r', (6 + rec * 8).toFixed(1));
@@ -192,8 +193,14 @@
     const sp = seg(p, T[2], T[2] + .02);
     const start = [mx, my - 6];
     const bx = lerp(start[0], spot[0], ln), by = lerp(start[1], spot[1], ln) - Math.sin(ln * Math.PI) * 42;
-    main.setAttribute('opacity', p > T[1] && sp < 1 ? (1 - sp).toFixed(2) : 0);
-    place(main, bx, by, lerp(-30, 8, ln) + (ln > .98 ? Math.sin(p * 400) * 2 : 0), 1.2);
+    // la botella se arma sobre tu orilla al terminar de grabar
+    const born = seg(p, T[1] - .025, T[1]);
+    main.setAttribute('opacity', (sp < 1 ? born * (1 - sp) : 0).toFixed(2));
+    // al caer al mar, una onda
+    const sr = seg(p, T[2] - .012, T[2] + .04);
+    splash.setAttribute('rx', (sr * 18).toFixed(1)); splash.setAttribute('ry', (sr * 10).toFixed(1));
+    splash.setAttribute('opacity', sr > 0 && sr < 1 ? (1 - sr).toFixed(2) : 0);
+    place(main, bx, by, lerp(-30, 8, ln), lerp(.6, 1.2, ease(born)));
 
     // 3 y 4. llegar a 8 y luego a 4 más
     items.forEach(it => {
