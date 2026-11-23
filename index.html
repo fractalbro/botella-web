@@ -74,33 +74,26 @@
     </div>
   </section>
 
-  <!-- Cómo funciona -->
-  <section class="how" id="como" aria-labelledby="h-como">
-    <div class="wrap">
-      <p class="eyebrow a rv">Así funciona</p>
-      <h2 id="h-como" class="h-xl rv"><span class="ln">Primero te</span> <span class="ln"><em>escuchan</em>.</span></h2>
-      <ol class="steps">
-        <li class="step rv">
-          <div class="art"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></span><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
-          <h3>Graba</h3>
-          <p>Una pregunta, una confesión o una historia. Hasta 60 segundos, con tu voz.</p>
-        </li>
-        <li class="step rv">
-          <div class="art"><svg class="bt" viewBox="0 0 120 40" aria-hidden="true"><path d="M16 6h56q14 0 18 8h18v12H90q-4 8-18 8H16q-10 0-10-14T16 6z" fill="rgba(127,216,201,.18)" stroke="rgba(170,240,228,.9)" stroke-width="2.5"/><rect x="22" y="14" width="48" height="12" rx="5" fill="#F6E7C4"/><rect x="108" y="15" width="8" height="10" fill="#8A5A33"/></svg></div>
-          <h3>Lánzala al mar</h3>
-          <p>Desliza la botella hacia arriba y se va. Nadie sabe cómo te ves, solo cómo suenas.</p>
-        </li>
-        <li class="step rv">
-          <div class="art shores" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><span class="hz"></span></div>
-          <h3>Llega a ocho orillas</h3>
-          <p>La escuchan ocho personas de Lima con tus mismos temas. Si nadie responde en unas horas, la marea la lleva a cuatro más.</p>
-        </li>
-        <li class="step rv">
-          <div class="art orbs" aria-hidden="true"><i></i><i></i></div>
-          <h3>Conversa</h3>
-          <p>Se abre una conversación privada, solo con voz. Tu nombre, tu foto y una llamada llegan después, y solo si los dos quieren.</p>
-        </li>
-      </ol>
+  <!-- Por dentro: así viaja tu voz (escena isométrica ligada al scroll) -->
+  <section class="inside" id="como" aria-labelledby="h-como">
+    <div class="in-stage">
+      <div class="in-head wrap">
+        <h2 id="h-como" class="h-lg"><span class="ln">Por dentro, así viaja</span> <span class="ln">tu <em>voz</em>.</span></h2>
+      </div>
+      <div class="in-scene" aria-hidden="true"><svg id="iso" viewBox="-150 -112 300 210" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <div class="in-copy wrap">
+        <ol class="in-steps" id="in-steps">
+          <li data-k="0"><h3>Graba</h3><p>Una pregunta con tu voz, hasta 60 segundos. Sin foto: aquí vales por lo que dices.</p></li>
+          <li data-k="1"><h3>Lánzala al mar</h3><p>Desliza la botella hacia arriba y se va. Nadie sabe cómo te ves, solo cómo suenas.</p></li>
+          <li data-k="2"><h3>Llega a ocho orillas</h3><p>La escuchan ocho personas de Lima a las que les gusta lo mismo que a ti.</p></li>
+          <li data-k="3"><h3>La marea ayuda</h3><p>Si en seis horas nadie responde, la marea la lleva a cuatro orillas más.</p></li>
+          <li data-k="4"><h3>Alguien la descorcha</h3><p>Una persona la abre y te escucha. Con calma, con audífonos, de verdad.</p></li>
+          <li data-k="5"><h3>Te responde con su voz</h3><p>Su voz llega tal cual es. En Botella ninguna voz se modifica.</p></li>
+          <li data-k="6"><h3>Conversan</h3><p>Una conversación privada. Los une un tema en común, no una foto ni un distrito.</p></li>
+          <li data-k="7"><h3>Dos llaves, dos nombres</h3><p>Cada uno pone su llave cuando quiere. Si los dos la ponen, aparecen sus nombres.</p></li>
+        </ol>
+        <div class="in-rail" id="in-rail" role="group" aria-label="Ir a un paso"></div>
+      </div>
     </div>
   </section>
 
@@ -253,5 +246,6 @@
 <audio id="au" preload="none"></audio>
 <script src="/config.js"></script>
 <script src="/site.js"></script>
+<script src="/inside.js"></script>
 </body>
 </html>

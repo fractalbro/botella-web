@@ -72,7 +72,7 @@ section{position:relative}
 
 /* marquee */
 .marquee{overflow:hidden;border-block:1px solid var(--line);padding:22px 0;background:var(--bg)}
-.mq-track{display:flex;gap:28px;width:max-content;animation:mq 60s linear infinite;font-family:var(--serif);font-style:italic;font-size:clamp(24px,6vw,40px);color:var(--cork);white-space:nowrap}
+.mq-track{display:flex;gap:28px;width:max-content;translate:var(--mqx,0) 0;animation:mq 60s linear infinite;font-family:var(--serif);font-style:italic;font-size:clamp(24px,6vw,40px);color:var(--cork);white-space:nowrap}
 .mq-track b{color:var(--a);font-style:normal}
 @keyframes mq{to{transform:translateX(-50%)}}
 
@@ -257,3 +257,50 @@ details p{margin:-6px 0 24px;color:var(--muted);max-width:52ch;font-size:16.5px}
 .mom p{margin:0;color:var(--muted);font-size:15.5px}
 @media (min-width:860px){.mom-row{padding-left:max(var(--pad),calc((100vw - 1180px)/2 + 22px))}}
 .paper .btn-ink{margin-top:10px}
+
+/* por dentro: escena isométrica ligada al scroll */
+.inside{background:linear-gradient(var(--bg),var(--bg2) 30%,var(--bg2))}
+.inside .h-lg em{color:var(--a)}
+.in-head{padding-top:clamp(80px,14vw,150px)}
+.in-scene{display:none}
+.in-steps{list-style:none;margin:40px 0 0;padding:0;display:grid;gap:22px}
+.in-steps h3{font-family:var(--display);font-weight:600;font-size:22px;letter-spacing:-.02em;margin:0 0 6px}
+.in-steps p{margin:0;color:var(--muted);font-size:16px;max-width:34ch}
+.in-rail{display:none}
+.iso-t{font:600 8px/1 var(--sans);letter-spacing:.01em}
+
+/* con JS: la sección se queda fija y el scroll mueve la historia */
+.iso-ready .inside{height:760svh}
+.iso-ready .in-stage{position:sticky;top:0;height:100svh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+.iso-ready .in-head{padding-top:calc(78px + env(safe-area-inset-top,0px))}
+.iso-ready .in-scene{display:block;position:relative;min-height:0;overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent)}
+.iso-ready .in-scene svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.iso-ready .in-copy{position:relative}
+.iso-ready .in-steps{display:grid;grid-template-areas:"s";margin:0;min-height:112px}
+.iso-ready .in-steps li{grid-area:s;opacity:0;transform:translateY(10px);transition:opacity .45s var(--ease),transform .55s var(--ease);pointer-events:none}
+.iso-ready .in-steps li.on{opacity:1;transform:none;pointer-events:auto}
+.iso-ready .in-rail{display:flex;gap:6px;margin-top:14px}
+.in-dot{flex:1;height:24px;position:relative;max-width:44px}
+.in-dot::after{content:"";position:absolute;left:0;right:0;top:11px;height:2px;border-radius:1px;background:var(--line);transition:background .3s}
+.in-dot.past::after{background:rgba(127,216,201,.45)}
+.in-dot.on::after{background:var(--a)}
+.cam{transition:none}
+.waves path{animation:wave 4.8s ease-in-out infinite;animation-play-state:paused;transform-box:fill-box;transform-origin:center}
+.inside.live .waves path{animation-play-state:running}
+@keyframes wave{0%,100%{transform:translateX(-2px);opacity:.4}50%{transform:translateX(2px);opacity:1}}
+.shore g{transition:opacity .4s}
+@media (min-width:860px){
+  .iso-ready .in-stage{grid-template-columns:minmax(340px,.75fr) 1.25fr;column-gap:24px;grid-template-rows:1fr auto 1fr;max-width:1180px;margin:0 auto;padding:0 var(--pad)}
+  .iso-ready .in-head{grid-column:1;grid-row:1;align-self:end;padding:0 0 28px}
+  .iso-ready .in-copy{grid-column:1;grid-row:2;padding:0}
+  .iso-ready .in-scene{grid-column:2;grid-row:1/4;margin:0 calc(-1 * var(--pad)) 0 0;-webkit-mask-image:radial-gradient(closest-side,#000 72%,transparent);mask-image:radial-gradient(closest-side,#000 72%,transparent)}
+  .in-steps h3{font-size:28px}
+  .in-steps p{font-size:18px}
+  .iso-ready .in-head,.iso-ready .in-copy{margin:0;width:100%;max-width:440px}
+}
+
+/* hero: al bajar, el texto sube un poco más lento y la botella se va hacia el horizonte */
+.hero-in{transform:translate3d(0,calc(var(--hp,0) * -60px),0);opacity:calc(1 - var(--hp,0) * 1.1)}
+.bottle-float{translate:calc(var(--hp,0) * 6vw) calc(var(--hp,0) * -26px);scale:calc(1 - var(--hp,0) * .6);opacity:calc(1 - var(--hp,0) * .9)}
+#sea{transform:translate3d(0,calc(var(--hp,0) * 90px),0)}
+@media (prefers-reduced-motion:reduce){.hero-in,.bottle-float,#sea{transform:none;translate:none;scale:none;opacity:1}}

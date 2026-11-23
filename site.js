@@ -29,6 +29,24 @@
     const mid = 40;
     nav.classList.toggle('on-paper', papers.some(p => { const r = p.getBoundingClientRect(); return r.top < mid && r.bottom > mid; }));
     lastY = y;
+    if (!reduce) heroP();
+  };
+  /* hero ligado al scroll y cinta de preguntas que acelera con el dedo */
+  const hero = $('.hero'), mq = $('.mq-track');
+  let mqX = 0, mqV = 0, mqRaf = 0, mqLast = scrollY, mqW = 0;
+  const heroP = () => {
+    const p = Math.min(1, Math.max(0, scrollY / (hero.offsetHeight || 1)));
+    if (p < 1 || hero.style.getPropertyValue('--hp') !== '1') hero.style.setProperty('--hp', p.toFixed(3));
+    mqV += (scrollY - mqLast) * .25; mqLast = scrollY;
+    if (!mqRaf) mqRaf = requestAnimationFrame(mqTick);
+  };
+  const mqTick = () => {
+    mqRaf = 0;
+    mqW = mqW || mq.scrollWidth / 2;
+    mqV *= .9;
+    mqX = (mqX - mqV) % mqW; if (mqX > 0) mqX -= mqW;
+    mq.style.setProperty('--mqx', mqX.toFixed(1) + 'px');
+    if (Math.abs(mqV) > .05) mqRaf = requestAnimationFrame(mqTick);
   };
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
