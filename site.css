@@ -1,6 +1,6 @@
 /* Botella · sitio. Mismos colores y tipografías que la app. */
 :root{
-  --bg:#05121F; --bg2:#081B2C; --fg:#F4EFE7; --muted:#ADA6A2; --dim:#7A7372;
+  --bg:#05121F; --bg2:#081B2C; --fg:#F4EFE7; --muted:#ADA6A2; --dim:#8C8584;
   --a:#7FD8C9; --a-ink:#05121F; --cork:#F6E7C4; --amber:#FFC24B;
   --paper:#F1EADD; --ink:#0B1A26; --ink2:#4D5660;
   --line:rgba(244,239,231,.14); --line-ink:rgba(11,26,38,.16);
@@ -171,7 +171,7 @@ section{position:relative}
 .f input,.f select{height:58px;border-radius:18px;border:1.5px solid var(--line-ink);background:#fff;padding:0 18px;font-size:17px;color:var(--ink);width:100%;outline:none;appearance:none;-webkit-appearance:none;transition:border-color .2s}
 .f select{background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B1A26' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 18px center/18px}
 .f input:focus,.f select:focus{border-color:var(--ink)}
-.f input::placeholder{color:#9AA1A6}
+.f input::placeholder{color:#6B737A}
 .f small{font-size:12.5px;color:var(--ink2)}
 .tel{display:flex;align-items:center;height:58px;border-radius:18px;border:1.5px solid var(--line-ink);background:#fff;overflow:hidden;transition:border-color .2s}
 .tel:focus-within{border-color:var(--ink)}
