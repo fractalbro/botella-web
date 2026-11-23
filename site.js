@@ -114,7 +114,7 @@
     <span class="pp">${PLAY}</span>
     <span><span class="meta"><span><b>${v.kind}</b> de ${v.d}</span></span>
     <span class="q" style="display:block">${v.q}</span>
-    <span class="bars" style="display:flex">${v.pk.map(p => `<i style="height:${Math.max(14, p * 100)}%"></i>`).join('')}<span class="t">${fmt(v.secs)}</span></span></span>
+    <span class="bars" style="display:flex">${v.pk.map((p, i) => `<i style="height:${Math.max(14, p * 100)}%;--i:${i}"></i>`).join('')}<span class="t">${fmt(v.secs)}</span></span></span>
   </button>`).join('');
   $$('#vlist .rv').forEach(el => io.observe(el));
   const au = $('#au'); let cur = null;
@@ -194,13 +194,13 @@
     go.disabled = true; go.textContent = 'Guardando tu lugar…';
     try {
       const r = await rpc('join_waitlist', { p_name: name, p_phone: phone, p_district: f.get('district') || null, p_ref: store.get('ref') || null, p_source: source || null });
-      store.set('result', r); show(r);
+      store.set('result', r); show(r); window.botellaLaunch && window.botellaLaunch();
       $('#entrar').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
     } catch (x) {
       if (x.code === 'PGRST202' || x.status === 404) {
         // El servidor aún no tiene la tabla de registro: no dejamos a nadie afuera.
         const r = { granted: true, name, link: `${CFG.app}/?c=${CFG.code}`, code: CFG.code, invite: null };
-        show(r);
+        show(r); window.botellaLaunch && window.botellaLaunch();
       } else if (/phone/.test(x.message)) err.textContent = 'Revisa tu número de WhatsApp.';
       else err.textContent = 'No pudimos guardar tu lugar. Revisa tu conexión e intenta otra vez.';
     } finally { go.disabled = false; go.textContent = 'Quiero mi botella'; }

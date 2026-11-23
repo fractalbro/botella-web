@@ -304,3 +304,40 @@ details p{margin:-6px 0 24px;color:var(--muted);max-width:52ch;font-size:16.5px}
 .bottle-float{translate:calc(var(--hp,0) * 6vw) calc(var(--hp,0) * -26px);scale:calc(1 - var(--hp,0) * .6);opacity:calc(1 - var(--hp,0) * .9)}
 #sea{transform:translate3d(0,calc(var(--hp,0) * 90px),0)}
 @media (prefers-reduced-motion:reduce){.hero-in,.bottle-float,#sea{transform:none;translate:none;scale:none;opacity:1}}
+
+/* capas suaves (motion.js) */
+.nav-prog{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--a);transform:scaleX(0);transform-origin:0 50%;opacity:.8;pointer-events:none}
+.nav:not(.solid) .nav-prog{opacity:0}
+.nav.on-paper .nav-prog{background:#1E6F66}
+.strike li.scrub s{transition:none;background-size:calc(var(--s,0) * 100%) 2px}
+.strike li.scrub{color:color-mix(in srgb,var(--dim) calc(100% - var(--s,0) * 45%),transparent)}
+.six{display:block;width:min(220px,60vw);height:auto;margin:22px 0 4px}
+.six line{stroke:#1E6F66;stroke-width:1.4;stroke-linecap:round;opacity:.55}
+.six circle{fill:var(--paper);stroke:var(--ink2);stroke-width:1.4;transition:fill .4s var(--ease),stroke .4s}
+.six circle.lit{fill:#1E6F66;stroke:#1E6F66}
+.six circle.one{fill:var(--ink);stroke:var(--ink)}
+.wm-xl{background:linear-gradient(to top,rgba(127,216,201,.32) var(--tide,0%),transparent var(--tide,0%));-webkit-background-clip:text;background-clip:text}
+/* voces: las ondas crecen al aparecer y el botón late mientras suena */
+.js .vc.rv .bars i{transform:scaleY(.12);transition:transform .7s var(--ease) calc(.35s + var(--i,0) * 22ms),background .15s}
+.js .vc.rv.in .bars i{transform:none}
+.vc .pp{position:relative}
+.vc.on .pp::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--c);animation:ring 1.6s var(--ease) infinite}
+@keyframes ring{from{transform:scale(1);opacity:.8}to{transform:scale(1.7);opacity:0}}
+/* momentos: entran desde la derecha, como la tira que se desliza */
+.js .mom.rv{transform:translateX(48px)}
+.js .mom.rv.in{transform:none}
+.js .mom.rv:nth-child(2){transition-delay:.08s}.js .mom.rv:nth-child(3){transition-delay:.16s}.js .mom.rv:nth-child(4){transition-delay:.24s}.js .mom.rv:nth-child(5){transition-delay:.32s}
+/* casilla de edad: el check se dibuja */
+.check svg path{stroke-dasharray:22;stroke-dashoffset:22;transition:stroke-dashoffset .35s var(--ease)}
+.check svg{opacity:1}
+.check[aria-checked="true"] svg path{stroke-dashoffset:0}
+.check:active .box{transform:scale(.9)}
+.check .box{transition:background .2s,transform .15s}
+/* registro: la botella despega */
+.join-card{position:relative}
+.launch{position:absolute;left:50%;bottom:30%;width:110px;margin-left:-55px;pointer-events:none;animation:liftoff 1.5s cubic-bezier(.5,0,.75,0) forwards}
+.launch svg{display:block;width:100%;transform:rotate(-70deg)}
+@keyframes liftoff{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:1;transform:translateY(-10px) scale(1)}100%{transform:translateY(-120vh) scale(.7);opacity:0}}
+.done:not([hidden]){animation:doneIn .7s var(--ease) both}
+@keyframes doneIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.js .mom.rv,.js .vc.rv .bars i{transform:none}.check svg path{stroke-dashoffset:0}.check[aria-checked="false"] svg{opacity:0}}
