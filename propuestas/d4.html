@@ -1,0 +1,19 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap"><link rel="stylesheet" href="p.css"><script src="ill.js"></script></head><body>
+<header class="bar"><span class="wm">botella<i></i></span><button class="pill pa">Entrar</button></header>
+<section class="sc"><svg id="s1"></svg><div class="copy"><h1>Las voces brillan en lo profundo.</h1><p>Cada botella es alguien diciendo algo de verdad. Bájate a escuchar.</p><div class="row"><button class="pill pa">Lanzar mi botella</button><button class="pill p2">▶ Escuchar una</button></div></div></section>
+<section class="sc"><svg id="s2"></svg><div class="copy top"><h2>Y si nadie responde, la marea la lleva.</h2><p>Después de 6 horas, tu botella viaja a 4 personas más.</p></div></section>
+<section class="sc"><svg id="s3"></svg><div class="copy"><h2>Dos luces que se encuentran.</h2><p>Se escuchan, se responden y deciden juntos si se dicen el nombre.</p></div></section>
+<script>
+const W=innerWidth,H=innerHeight,D=W>=900,m=Math.min(W,H);
+const set=(id,s)=>{const e=document.getElementById(id);e.setAttribute('viewBox',`0 0 ${W} ${H}`);e.innerHTML=s;};
+const deep=id=>defs(id)+`<linearGradient id="${id}dp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16405E"/><stop offset=".35" stop-color="#0A2238"/><stop offset="1" stop-color="#020B15"/></linearGradient><rect width="${W}" height="${H}" fill="url(#${id}dp)"/>`;
+const rays=(n,sd)=>{seed(sd);let o='';for(let i=0;i<n;i++){const x=R()*W,w=20+R()*60;o+=`<path d="M${x} 0 h${w} L${x+w*3-80} ${H} h${-w*1.6}z" fill="#BFF3EA" opacity="${(.03+R()*.05).toFixed(2)}"/>`;}return o;};
+const bubbles=(n,sd)=>{seed(sd);let o='';for(let i=0;i<n;i++)o+=`<circle cx="${R()*W}" cy="${R()*H}" r="${1+R()*3}" fill="none" stroke="#BFF3EA" opacity="${(.2+R()*.4).toFixed(2)}"/>`;return o;};
+{const id='a';let j='';const P=D?[[.62,.34,2.2,0],[.82,.5,1.4,1],[.5,.6,1,2],[.9,.2,.9,3],[.72,.72,.8,5]]:[[.64,.2,1.4,0],[.22,.25,.9,1],[.88,.34,.6,2],[.42,.08,.5,3]];P.forEach(([x,y,s,c],i)=>j+=jelly(W*x,H*y,s,ORB[c],40+i));
+set('s1',deep(id)+rays(D?9:5,3)+`<path d="M0 6 q${W/8} -10 ${W/4} 0 t${W/4} 0 t${W/4} 0 t${W/4} 0" stroke="#BFF3EA" stroke-width="2" fill="none" opacity=".4"/>`+bubbles(D?60:30,4)+j);}
+{const id='b';let bt='';[0,1,2,3].forEach(i=>bt+=`<g transform="translate(${-60+i*40} ${-56-(i%2)*10}) rotate(${-10+i*6})">${bottle(id+i,.32)}</g>`);const wx=D?W*.62:W*.5,wy=D?H*.55:H*.62,ws=D?2.2:1.25;
+set('s2',deep(id)+rays(D?7:4,8)+bubbles(D?50:24,9)+ribbon(`M0 ${wy+40} C ${W*.3} ${wy-60}, ${W*.6} ${wy+120}, ${W} ${wy}`,'#8FB7CF',1.4)+`<g class="drift">${whale(wx,wy,ws)}<g transform="translate(${wx} ${wy-30*ws}) scale(${ws})">${bt}</g></g>`+orbG(wx-90*ws,wy-110*ws,4,ORB[1])+orbG(wx+80*ws,wy-120*ws,5,ORB[2]));}
+{const id='c',y=D?H*.44:H*.32;set('s3',deep(id)+rays(D?7:4,11)+bubbles(D?50:24,12)+jelly(W*(D?.55:.3),y,D?1.8:1.2,ORB[0],51)+jelly(W*(D?.8:.72),y+20,D?1.8:1.2,ORB[3],52)
++ribbon(`M${W*(D?.55:.3)+20} ${y+70} C ${W*.5} ${y+160}, ${W*.6} ${y+160}, ${W*(D?.8:.72)-20} ${y+90}`,A,2.2));}
+</script></body></html>

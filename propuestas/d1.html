@@ -1,0 +1,29 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap"><link rel="stylesheet" href="p.css"><script src="ill.js"></script></head><body>
+<header class="bar"><span class="wm">botella<i></i></span><button class="pill pa">Entrar</button></header>
+<section class="sc"><svg id="s1"></svg><div class="copy"><h1>Esta noche hay voces flotando.</h1><p>Tu voz llega a 8 personas que no conoces. Sin fotos. Solo lo que dices.</p><div class="row"><button class="pill pa">Lanzar mi botella</button><button class="pill p2">▶ Escuchar una</button></div></div></section>
+<section class="sc"><svg id="s2"></svg><div class="copy"><h2>Ábrela. Alguien te habla.</h2><p>Una pregunta, una voz de verdad. Sin filtros.</p></div></section>
+<section class="sc"><svg id="s3"></svg><div class="copy top r"><h2>Primero la voz. Luego, el nombre.</h2><p>El nombre aparece solo si los dos lo deciden.</p></div></section>
+<script>
+const W=innerWidth,H=innerHeight,D=W>=900,m=Math.min(W,H);
+const set=(id,s)=>{const e=document.getElementById(id);e.setAttribute('viewBox',`0 0 ${W} ${H}`);e.innerHTML=s;};
+// 1: botella gigante entre nubes, alguien sentado encima, luna enorme
+{const id='a',sea=H*.8,bs=D?H*.0042:Math.min(W*.0068,H*.0046),bx=D?W*.66:W*.5,by=D?H*.5:H*.38;
+set('s1',defs(id)+`<rect width="${W}" height="${H}" fill="url(#${id}sky)"/>`+stars(W,sea,D?220:110)+moon(id,D?W*.8:W*.78,D?H*.28:H*.17,m*.13)
++cloud(id,W*.12,H*.32,D?1.4:.8,.55)+cloud(id,W*.9,H*.5,D?1.8:1,.7)+seaBand(id,sea,W,H-sea)+waves(sea,W,D?70:34)
++`<ellipse cx="${bx}" cy="${sea+20}" rx="${130*bs/2}" ry="12" fill="url(#${id}glow)" class="pulse"/>`
++ribbon(`M${bx+50*bs} ${by-10*bs} C ${bx+80*bs} ${by-60*bs}, ${bx-20*bs} ${by-80*bs}, ${bx+20*bs} ${by-140*bs}`)+ribbon(`M${bx+50*bs} ${by-6*bs} C ${bx+140*bs} ${by-40*bs}, ${bx+60*bs} ${by-110*bs}, ${bx+130*bs} ${by-150*bs}`,'#FFC24B',1.8)
++orbG(bx+20*bs,by-140*bs,6,ORB[0])+orbG(bx+130*bs,by-150*bs,5,ORB[1])+orbG(bx-40*bs,by-100*bs,4,ORB[3])
++`<g transform="translate(${bx-60*bs} ${by-20*bs})"><g class="bob">${bottle(id,bs)}<g transform="translate(${46*bs} ${4.5*bs}) scale(${bs*.55})">${sitter()}</g></g></g>`
++cloud(id,bx-30*bs,by+30*bs,D?1.6:1.15,.95)+cloud(id,bx+60*bs,by+26*bs,D?1.2:.85,.9));}
+// 2: botella abierta sobre una nube, papel crema
+{const id='b';set('s2',defs(id)+`<rect width="${W}" height="${H}" fill="url(#${id}sky)"/>`+stars(W,H,D?160:80,9)
++cloud(id,W*.5,H*.62,D?3.2:2.2,.95)+`<g transform="translate(${W*(D?.58:.2)} ${H*.5}) rotate(-12)">${bottle(id,D?2.4:1.6,false)}</g>`
++`<g class="drift">${paperCard(D?W*.62:W*.12,D?H*.18:H*.14,D?380:W*.76,'¿Qué harías un domingo si nadie te conociera?','Alguien que ama la música')}</g>`
++orbG(W*.85,H*.12,5,ORB[2])+orbG(W*.08,H*.44,4,ORB[5]));}
+// 3: dos islas de nube, una cinta de voz entre ellas con 4 etapas
+{const id='c',y=D?H*.62:H*.72,x1=W*.18,x2=W*.82;let st='';['Voces','Nombres','Llamada','Plan'].forEach((t,i)=>{const x=W*.1+W*.8*(i+.5)/4,yy=y-H*.2-Math.sin((i+.5)/4*Math.PI)*H*.07;st+=orbG(x,yy,7,ORB[i])+`<text x="${x}" y="${yy+28}" text-anchor="middle" font-family="Geist" font-size="13" font-weight="500" fill="#F4EFE7">${t}</text>`});
+set('s3',defs(id)+`<rect width="${W}" height="${H}" fill="url(#${id}sky)"/>`+stars(W,H,D?160:80,4)+moon(id,W*(D?.5:.85),H*(D?.2:.42),m*.05)
++cloud(id,x1,y+30,D?1.6:.9,1)+cloud(id,x2,y+30,D?1.6:.9,1)+`<g transform="translate(${x1} ${y}) scale(1.2)">${sitter()}</g><g transform="translate(${x2} ${y}) scale(-1.2 1.2)">${sitter()}</g>`
++ribbon(`M${x1+10} ${y-40} Q ${W/2} ${y-H*.36} ${x2-10} ${y-40}`,A,2.4)+st);}
+</script></body></html>
