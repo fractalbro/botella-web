@@ -62,7 +62,7 @@ h3{font-weight:600;font-size:18px;letter-spacing:-.015em;margin:0}
 .hero::after{content:"";position:absolute;inset:auto 0 0;height:55%;background:linear-gradient(transparent,rgba(5,18,31,.85) 60%,var(--bg));z-index:-1}
 .hero-bottle{position:absolute;left:50%;top:max(25svh,150px);width:min(46vw,250px);transform:translateX(-58%)}
 .hero-bottle svg{width:100%;height:auto;display:block;overflow:visible}
-.bob{animation:bob 6s ease-in-out infinite;transform-origin:50% 50%}
+.bob{animation:bob 6s ease-in-out infinite;transform-origin:50% 50%;transform:rotate(-24deg)}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-24deg)}50%{transform:translateY(-8px) rotate(-19deg)}}
 .hero-in{width:100%}
 .ctas{display:grid;gap:10px;margin-top:28px}
@@ -226,6 +226,94 @@ details p{margin:-6px 0 22px;color:var(--fg-2);max-width:56ch}
 .js .ink{opacity:0;transform:translateY(18px);transition:opacity .9s var(--out),transform 1s var(--out)}
 .js .ink.in{opacity:1;transform:none}
 
+
+/* ---------- movimiento: que la noche esté viva ---------- */
+.sky .tw{animation:tw var(--d,3s) ease-in-out var(--dl,0s) infinite}
+@keyframes tw{0%,100%{opacity:var(--o,.6)}50%{opacity:.08}}
+.sky .wave{animation:wave var(--d,9s) ease-in-out var(--dl,0s) infinite alternate}
+@keyframes wave{to{transform:translateX(var(--dx,24px))}}
+.sky .glint rect{animation:glint 2.6s ease-in-out infinite;animation-delay:var(--dl,0s)}
+@keyframes glint{0%,100%{opacity:var(--o,.4)}50%{opacity:.06}}
+.drift-b{will-change:transform}
+.d-xl .w{display:inline-block;white-space:pre}
+.js .hero-in .d-xl{opacity:1;transform:none;filter:none;animation:none}
+.js .d-xl .w{opacity:0;transform:translateY(.4em) rotate(3deg);filter:blur(8px);animation:word .9s var(--out) forwards;animation-delay:calc(var(--i) * 90ms + .15s)}
+@keyframes word{to{opacity:1;transform:none;filter:none}}
+.js .hero-in .lead{animation-delay:.55s}.js .hero-in .ctas{animation-delay:.7s}
+.btn-2.on .ico{position:relative}
+.btn-2.on .ico::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:1.5px solid var(--a);animation:sonar 1.4s var(--out) infinite}
+@keyframes sonar{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+
+/* abrir: el corcho salta y el papel se desenrolla */
+.open-card{position:relative}
+.pop{position:absolute;right:-6px;top:-58px;width:132px;z-index:2;pointer-events:none;transform:rotate(-14deg)}
+.pop svg{width:100%;height:auto;overflow:visible;filter:drop-shadow(0 0 16px rgba(127,216,201,.5))}
+.pop .cork{transform-box:fill-box;transform-origin:50% 50%}
+.js .open-card.in .pop .cork{animation:cork 1s var(--out) .25s forwards}
+@keyframes cork{30%{transform:translate(6px,-4px)}100%{transform:translate(34px,-46px) rotate(220deg);opacity:0}}
+.js .open-card.in .pop .spark{animation:spark .7s var(--out) .45s both}
+@keyframes spark{from{opacity:0;transform:scale(.3)}50%{opacity:1}to{opacity:0;transform:scale(1.3)}}
+.pop .spark{transform-box:fill-box;transform-origin:center;opacity:0}
+.js .open-card .paper{clip-path:inset(0 0 100% 0)}
+.js .open-card.in .paper{animation:unroll .9s var(--out) .55s forwards}
+.js .open-card.in .paper.swap{animation:unroll .6s var(--out) forwards}
+.player:not(.playing) .wv i{animation:breathe 1.6s ease-in-out infinite;animation-delay:calc(var(--k) * 55ms)}
+@keyframes breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.55)}}
+.player .wv i{transform-origin:center}
+
+/* anillo: gira despacio y respira */
+.ring{animation:spin 80s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sonar{position:absolute;left:50%;top:50%;width:30%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;border:1.5px solid var(--a);opacity:0;animation:sonar2 2.8s var(--out) infinite;pointer-events:none}
+.sonar.s2{animation-delay:1.4s}
+@keyframes sonar2{from{transform:scale(1);opacity:.7}to{transform:scale(2.1);opacity:0}}
+
+/* conversación: alguien está grabando */
+.rec{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13.5px;color:var(--fg-2);width:max-content}
+.rec.me{justify-self:end}
+.rec .dot{width:9px;height:9px;border-radius:50%;background:#FF6B6F;animation:recdot 1s ease-in-out infinite}
+@keyframes recdot{50%{opacity:.25}}
+.rec .mini{display:flex;gap:2px;align-items:center;height:16px}
+.rec .mini i{width:3px;border-radius:2px;background:var(--fg-2);height:100%;animation:bounce .8s ease-in-out infinite;animation-delay:calc(var(--k) * 90ms)}
+@keyframes bounce{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+.bub .wv i.p{opacity:1}
+.stages li.on{animation:chip-pop .45s var(--spring)}
+@keyframes chip-pop{40%{transform:scale(1.08)}}
+.key-row.in .ico{animation:turn .9s var(--spring) .2s both}
+@keyframes turn{from{transform:rotate(-90deg)}to{transform:none}}
+
+/* 8 orillas: la botella viaja y se reparte */
+.shore{height:auto}
+.shore svg{display:block;width:100%;height:auto;overflow:visible}
+.shore .path{fill:none;stroke:rgba(127,216,201,.55);stroke-width:1.2;stroke-dasharray:3 4}
+.shore .lbl{position:static;display:block;margin-top:10px;white-space:normal;max-width:48%}
+.shore .lbls .lbl:last-child{text-align:right}
+.shore .lbls{display:flex;justify-content:space-between;gap:12px}
+
+/* íconos de rituales con vida propia */
+.in .rit-i svg,.rit li.in .rit-i svg,.calm-grid > div.in .rit-i svg{animation:var(--anim) var(--dur,3.2s) var(--out) infinite}
+.rit-i[data-ico="tide"]{--anim:i-tide;--dur:2.4s}
+.rit-i[data-ico="plus"]{--anim:i-plus}
+.rit-i[data-ico="seal"]{--anim:i-seal}
+.rit-i[data-ico="key"]{--anim:i-key}
+.rit-i[data-ico="pin"]{--anim:i-pin;--dur:2.4s}
+.rit-i[data-ico="lock"]{--anim:i-pin;--dur:3.6s}
+.rit-i[data-ico="adult"]{--anim:i-seal;--dur:4s}
+.rit-i[data-ico="flag"]{--anim:i-flag;--dur:2.6s}
+@keyframes i-tide{0%,100%{transform:translateX(-2px)}50%{transform:translateX(2px)}}
+@keyframes i-plus{0%,60%{transform:none}75%{transform:rotate(90deg) scale(1.15)}90%,100%{transform:rotate(90deg)}}
+@keyframes i-seal{0%,55%{transform:none}65%{transform:scale(1.25) rotate(-8deg)}75%{transform:scale(.92)}85%,100%{transform:none}}
+@keyframes i-key{0%,50%{transform:none}65%,80%{transform:rotate(-35deg)}100%{transform:none}}
+@keyframes i-pin{0%,50%,100%{transform:none}62%{transform:translateY(-4px)}74%{transform:translateY(0)}82%{transform:translateY(-2px)}}
+@keyframes i-flag{0%,100%{transform:skewY(0)}50%{transform:skewY(-6deg)}}
+.rit-i svg{transform-origin:center}
+
+/* constelación en la carta nocturna */
+.const{position:absolute;right:-20px;top:40px;width:min(520px,100vw);height:auto;z-index:-1;opacity:.9}
+.const line{stroke:rgba(127,216,201,.4);stroke-width:.8}
+.const circle{fill:#F4EFE7}
+.const circle.one{fill:var(--a)}
+
 @media (max-height:620px) and (max-width:599px){
   .hero-bottle{top:110px;width:38vw}
   .d-xl{font-size:44px}
@@ -258,7 +346,11 @@ details p{margin:-6px 0 22px;color:var(--fg-2);max-width:56ch}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+  .js .d-xl .w{opacity:1;transform:none;filter:none}
+  .js .open-card .paper{clip-path:none}
+  .pop .cork{opacity:0}
   .js .hero-in > *,.js .hero-bottle{opacity:1;transform:none;filter:none}
   .js .ink,.js .chat > *{opacity:1;transform:none}
   .orb.near,.orb.far{opacity:1;transform:none}
 }
+.hero .sky{top:-80px;height:calc(100% + 80px);will-change:transform}

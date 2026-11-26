@@ -41,21 +41,23 @@
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('preserveAspectRatio', 'none');
     let h = `<defs><linearGradient id="${id}-s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#020B15"/><stop offset="${hz}" stop-color="#0A2238"/><stop offset="1" stop-color="#03101C"/></linearGradient><radialGradient id="${id}-m"><stop offset="0" stop-color="#EAF6F2" stop-opacity=".2"/><stop offset="1" stop-color="#EAF6F2" stop-opacity="0"/></radialGradient></defs><rect width="${W}" height="${H}" fill="url(#${id}-s)"/>`;
     const stars = Math.round(W * y0 / 2600);
-    for (let i = 0; i < stars; i++) h += `<circle cx="${(rnd() * W).toFixed(1)}" cy="${(rnd() * y0 * .95).toFixed(1)}" r="${(rnd() * .9 + .3).toFixed(2)}" fill="#fff" opacity="${(rnd() * .6 + .2).toFixed(2)}"/>`;
-    const mx = W * (o.mx ?? .78), my = o.myf ? H * o.myf : Math.min(y0 * .45, 170), mr = o.mr ?? (W > 900 ? 34 : 24);
+    for (let i = 0; i < stars; i++) { const o = (rnd() * .6 + .2).toFixed(2), tw = rnd() < .45; h += `<circle cx="${(rnd() * W).toFixed(1)}" cy="${(rnd() * y0 * .95).toFixed(1)}" r="${(rnd() * .9 + .3).toFixed(2)}" fill="#fff" opacity="${o}"${tw ? ` class="tw" style="--o:${o};--d:${(2 + rnd() * 4).toFixed(1)}s;--dl:-${(rnd() * 5).toFixed(1)}s"` : ''}/>`; }
+    const mx = W * (o.mx ?? .78), my = (o.myf ? H * o.myf : Math.min(y0 * .45, 170)) + (o.off || 0), mr = o.mr ?? (W > 900 ? 34 : 24);
     h += `<circle cx="${mx}" cy="${my}" r="${mr * 6}" fill="url(#${id}-m)"/><circle cx="${mx}" cy="${my}" r="${mr}" fill="#EAF6F2"/>`;
-    h += `<g class="glint">`; for (let i = 0; i < 10; i++) { const yy = y0 + 6 + i * i * 4.5; const w = 40 - i * 2.5 + rnd() * 20; h += `<rect x="${(mx - w / 2 + (rnd() - .5) * 14).toFixed(0)}" y="${yy.toFixed(0)}" width="${w.toFixed(0)}" height="1.4" fill="#EAF6F2" opacity="${(.5 - i * .045).toFixed(2)}"/>`; } h += `</g>`;
+    h += `<g class="glint">`; for (let i = 0; i < 10; i++) { const yy = y0 + 6 + i * i * 4.5; const w = 40 - i * 2.5 + rnd() * 20; const o = (.5 - i * .045).toFixed(2); h += `<rect x="${(mx - w / 2 + (rnd() - .5) * 14).toFixed(0)}" y="${yy.toFixed(0)}" width="${w.toFixed(0)}" height="1.4" fill="#EAF6F2" opacity="${o}" style="--o:${o};--dl:-${(rnd() * 2.6).toFixed(1)}s"/>`; } h += `</g>`;
     h += `<rect y="${y0}" width="${W}" height="1" fill="#2A4A63" opacity=".8"/>`;
     const waves = Math.round(W * (H - y0) / 5000);
-    for (let i = 0; i < waves; i++) { const y = y0 + 6 + rnd() * (H - y0); const w = 8 + rnd() * 34; h += `<rect x="${(rnd() * W).toFixed(0)}" y="${y.toFixed(0)}" width="${w.toFixed(0)}" height="1" fill="#8FB7CF" opacity="${(.08 + rnd() * .18).toFixed(2)}"/>`; }
+    for (let i = 0; i < waves; i++) { const y = y0 + 6 + rnd() * (H - y0); const w = 8 + rnd() * 34; h += `<rect class="wave" x="${(rnd() * W).toFixed(0)}" y="${y.toFixed(0)}" width="${w.toFixed(0)}" height="1" fill="#8FB7CF" opacity="${(.08 + rnd() * .22).toFixed(2)}" style="--d:${(5 + rnd() * 7).toFixed(1)}s;--dl:-${(rnd() * 8).toFixed(1)}s;--dx:${((rnd() < .5 ? -1 : 1) * (10 + rnd() * 26)).toFixed(0)}px"/>`; }
     svg.innerHTML = h;
   };
-  const skies = () => { sea($('#sky')); sea($('#sky2'), { hz: .7, mx: .86, myf: .56, mr: 18 }); };
+  const skies = () => { sea($('#sky'), { off: 80, hz: innerWidth > innerHeight ? .55 : .45 }); sea($('#sky2'), { hz: .86, mx: .84, myf: .76, mr: 16 }); };
   skies();
   let rs = 0; addEventListener('resize', () => { clearTimeout(rs); rs = setTimeout(skies, 150); });
 
   const BOTTLE = '<svg viewBox="0 0 120 40" aria-hidden="true" style="filter:drop-shadow(0 0 18px rgba(127,216,201,.55)) drop-shadow(0 0 4px rgba(255,236,190,.5))"><path d="M16 6h56q14 0 18 8h18v12H90q-4 8-18 8H16q-10 0-10-14T16 6z" fill="rgba(127,216,201,.2)" stroke="rgba(170,240,228,.9)" stroke-width="2.5"/><rect x="22" y="14" width="48" height="12" rx="5" fill="#F6E7C4"/><rect x="108" y="15" width="8" height="10" fill="#8A5A33"/></svg>';
   $('#hero-bottle').innerHTML = BOTTLE;
+  { const h1 = $('#h1'); let k = 0; const wrap = n => { [...n.childNodes].forEach(c => { if (c.nodeType === 3) { const f = document.createDocumentFragment(); c.textContent.split(/(\s+)/).forEach(t => { if (!t) return; if (/^\s+$/.test(t)) f.append(t); else { const sp = document.createElement('span'); sp.className = 'w'; sp.style.setProperty('--i', k++); sp.textContent = t; f.append(sp); } }); c.replaceWith(f); } else wrap(c); }); }; wrap(h1); }
+  $('#pop').innerHTML = '<svg viewBox="0 0 130 60"><path d="M16 16h56q14 0 18 8h18v12H90q-4 8-18 8H16q-10 0-10-14T16 16z" fill="rgba(127,216,201,.2)" stroke="rgba(170,240,228,.9)" stroke-width="2.5"/><rect x="22" y="24" width="48" height="12" rx="5" fill="#F6E7C4" opacity=".5"/><rect class="cork" x="108" y="25" width="8" height="10" fill="#8A5A33"/><g class="spark" stroke="#7FD8C9" stroke-width="2" stroke-linecap="round"><path d="M118 18l4-7M124 24l8-3M120 14l1-9"/></g></svg>';
 
   /* ---------- voces de ejemplo ---------- */
   const V = [
@@ -65,7 +67,7 @@
     { id: 'diego', kind: 'Confesión', topic: 'la tecnología', chip: 'Tecnología', c: '#9FE3B0', secs: 12, q: 'Trabajo desde casa y a veces paso días sin hablar con nadie.', pk: [1, .87, .93, .83, .7, .85, .7, .58, .68, .7, .63, .52, .25, .92, .64, .64, .57, .36, .26, .77, .73, .7, .61, .42, .89, .84, .57, .36] }
   ];
   const fmt = s => `0:${String(Math.max(0, Math.round(s))).padStart(2, '0')}`;
-  const bars = (pk) => pk.map(p => `<i style="--h:${Math.round(Math.max(.18, p) * 100)}%"></i>`).join('');
+  const bars = (pk) => pk.map((p, k) => `<i style="--h:${Math.round(Math.max(.18, p) * 100)}%;--k:${k}"></i>`).join('');
   const seedBars = (seed, n = 26) => { let r = seed; const a = []; for (let i = 0; i < n; i++) { r = (r * 9301 + 49297) % 233280; a.push(.25 + r / 233280 * .75); } return a; };
   $$('.chat .wv').forEach(w => w.innerHTML = bars(seedBars(+w.dataset.seed)));
 
@@ -102,7 +104,7 @@
   };
   const stop = () => {
     au.pause();
-    setIcon($('#player .ico'), 'play'); $$('#paper-wv i').forEach(b => b.classList.remove('p')); $('#paper-t').textContent = fmt(V[sel].secs);
+    setIcon($('#player .ico'), 'play'); $('#player').classList.remove('playing'); $$('#paper-wv i').forEach(b => b.classList.remove('p')); $('#paper-t').textContent = fmt(V[sel].secs);
     setIcon(heroBtn.querySelector('.ico'), 'play'); heroBtn.classList.remove('on'); heroBtn.querySelector('.listen-t').textContent = 'Escuchar una botella';
     setIcon(ringBtn.querySelector('.ico'), 'play'); ringBtn.setAttribute('aria-label', 'Escuchar una voz de verdad'); $('#ring-cap').textContent = 'Escucha una botella de verdad · 0:13';
     cur = null; from = null; kick();
@@ -113,7 +115,7 @@
     analyser(); if (actx && actx.state === 'suspended') actx.resume();
     cur = id; from = src; au.src = `/v/${id}-say.mp3`; au.currentTime = 0;
     au.play().catch(() => stop());
-    if (src === 'paper') setIcon($('#player .ico'), 'pause');
+    if (src === 'paper') { setIcon($('#player .ico'), 'pause'); $('#player').classList.add('playing'); }
     if (src === 'hero') { setIcon(heroBtn.querySelector('.ico'), 'pause'); heroBtn.classList.add('on'); heroBtn.querySelector('.listen-t').textContent = 'Escuchando…'; }
     if (src === 'ring') { setIcon(ringBtn.querySelector('.ico'), 'pause'); ringBtn.setAttribute('aria-label', 'Pausar'); }
     kick();
@@ -151,20 +153,65 @@
   const chat = $('#chat'), stages = $$('#stages li');
   const chatIO = new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting) return; chatIO.unobserve(e.target);
-    [...chat.children].forEach((n, i) => setTimeout(() => n.classList.add('in'), reduce ? 0 : i * 420));
+    const items = [...chat.children];
+    if (reduce) { items.forEach(n => n.classList.add('in')); return; }
+    let t = 0;
+    items.forEach(n => {
+      if (n.classList.contains('bub')) {
+        const rec = document.createElement('div'); rec.className = 'rec in' + (n.classList.contains('me') ? ' me' : '');
+        rec.innerHTML = `<span class="dot"></span><span class="mini">${[0, 1, 2, 3, 4].map(k => `<i style="--k:${k}"></i>`).join('')}</span>${n.classList.contains('me') ? 'Grabando tu respuesta' : 'Grabando…'}`;
+        setTimeout(() => { n.before(rec); rec.style.display = ''; }, t);
+        t += 1100;
+        setTimeout(() => { rec.remove(); n.classList.add('in'); const bs = [...n.querySelectorAll('.wv i')]; bs.forEach((b, i) => setTimeout(() => b.classList.add('p'), 300 + i * 28)); }, t);
+        t += 500;
+      } else { setTimeout(() => n.classList.add('in'), t + 200); }
+    });
   }), { threshold: .35 });
   chatIO.observe(chat);
 
   /* ---------- 8 orillas y la marea ---------- */
-  const shore = $('#shore');
+  const shore = $('#shore'), SVGNS = 'http://www.w3.org/2000/svg';
   const C8 = ['#7FD8C9', '#FFC24B', '#8E8CFF', '#FF70A9', '#FFB061', '#9FE3B0', '#8E8CFF', '#FFC24B'];
-  let sh = '<span class="hz"></span>';
-  C8.forEach((c, i) => { const x = 4 + i * 12.4, y = 50 + Math.sin(i * 1.3) * 10; sh += `<span class="orb near" style="--c:${c};left:calc(${x}% - 14px);top:calc(${y}% - 14px);width:28px;height:28px;transition-delay:${i * 90}ms"></span>`; });
-  [12, 37, 63, 88].forEach((x, i) => { sh += `<span class="orb far" style="--c:#7FD8C9;left:calc(${x}% - 8px);top:calc(18% - 8px);width:16px;height:16px;transition-delay:${900 + i * 120}ms"></span>`; });
-  sh += `<span class="lbl" style="left:0;bottom:0">8 personas con tus gustos</span><span class="lbl" style="right:0;top:0">+4 si en 6 h nadie responde</span>`;
-  shore.innerHTML = sh;
-  const shoreIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { shore.querySelectorAll('.orb').forEach(o => o.classList.add('in')); shoreIO.disconnect(); } }), { threshold: .5 });
-  shoreIO.observe(shore);
+  const hub = [200, 96], start = [24, 20];
+  const P8 = C8.map((c, i) => [26 + i * 49.7, 128 + Math.sin(i * 1.3) * 12]);
+  const P4 = [[60, 34], [150, 22], [250, 22], [340, 34]];
+  let g = `<svg viewBox="0 0 400 170"><defs>${[...new Set(C8)].map((c, i) => `<radialGradient id="og${c.slice(1)}" cx=".32" cy=".28"><stop offset="0" stop-color="#fff" stop-opacity=".8"/><stop offset=".25" stop-color="${c}"/><stop offset="1" stop-color="#050407"/></radialGradient>`).join('')}</defs>`;
+  g += `<path class="tidewave" d="M0 70 q25 -10 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" fill="none" stroke="rgba(143,183,207,.5)" stroke-width="1.2"/>`;
+  g += `<path id="flight" d="M${start[0]} ${start[1]} Q 90 -10 ${hub[0]} ${hub[1]}" fill="none" stroke="rgba(127,216,201,.35)" stroke-width="1" stroke-dasharray="2 4"/>`;
+  P8.forEach(([x, y]) => g += `<path class="path p8" d="M${hub[0]} ${hub[1]} L${x.toFixed(1)} ${y.toFixed(1)}"/>`);
+  P4.forEach(([x, y]) => g += `<path class="path p4" d="M${hub[0]} ${hub[1]} L${x} ${y}"/>`);
+  P8.forEach(([x, y], i) => g += `<circle class="o8" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="11" fill="url(#og${C8[i].slice(1)})"/>`);
+  P4.forEach(([x, y]) => g += `<circle class="o4" cx="${x}" cy="${y}" r="6.5" fill="url(#og7FD8C9)"/>`);
+  g += `<g id="sb"><g transform="scale(.32) translate(-60 -20)"><path d="M16 6h56q14 0 18 8h18v12H90q-4 8-18 8H16q-10 0-10-14T16 6z" fill="rgba(127,216,201,.3)" stroke="rgba(170,240,228,.95)" stroke-width="3"/><rect x="22" y="14" width="48" height="12" rx="5" fill="#F6E7C4"/><rect x="108" y="15" width="8" height="10" fill="#8A5A33"/></g></g></svg>`;
+  g += `<div class="lbls"><span class="lbl">8 personas con tus gustos</span><span class="lbl">+4 si en 6 h nadie responde</span></div>`;
+  shore.innerHTML = g;
+  const flight = shore.querySelector('#flight'), FL = flight.getTotalLength(), sb = shore.querySelector('#sb');
+  const p8 = [...shore.querySelectorAll('.p8')], p4 = [...shore.querySelectorAll('.p4')], o8 = [...shore.querySelectorAll('.o8')], o4 = [...shore.querySelectorAll('.o4')], tw = shore.querySelector('.tidewave');
+  [...p8, ...p4].forEach(p => { const L = p.getTotalLength(); p.dataset.l = L; p.style.strokeDasharray = `${L} ${L}`; });
+  const renderShore = (p) => {
+    const f = clamp(p / .35), pt = flight.getPointAtLength(FL * (1 - Math.pow(1 - f, 2)));
+    sb.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) rotate(${(-30 + f * 50).toFixed(0)})`);
+    sb.style.opacity = p < .42 ? 1 : Math.max(0, 1 - (p - .42) * 10);
+    flight.style.opacity = 1 - clamp((p - .3) * 5);
+    p8.forEach((l, i) => { const t = clamp((p - .36 - i * .02) / .12); l.style.strokeDashoffset = (+l.dataset.l * (1 - t)).toFixed(1); });
+    o8.forEach((c, i) => { const t = clamp((p - .44 - i * .02) / .06); c.setAttribute('r', (11 * (t < 1 ? t * 1.25 : 1)).toFixed(2)); c.style.opacity = t > 0 ? 1 : 0; });
+    const tide = clamp((p - .7) / .1);
+    tw.setAttribute('transform', `translate(${(-50 + tide * 50).toFixed(1)} ${(30 - tide * 30).toFixed(1)})`); tw.style.opacity = tide;
+    p4.forEach((l, i) => { const t = clamp((p - .76 - i * .02) / .1); l.style.strokeDashoffset = (+l.dataset.l * (1 - t)).toFixed(1); });
+    o4.forEach((c, i) => { const t = clamp((p - .82 - i * .03) / .06); c.setAttribute('r', (6.5 * t).toFixed(2)); c.style.opacity = t * .8; });
+  };
+  renderShore(reduce ? 1 : 0);
+
+  /* ---------- constelación y la cifra que cuenta ---------- */
+  const cst = $('#const'); let cLines = [];
+  if (cst) {
+    const pts = [[60, 150], [130, 70], [215, 110], [300, 50], [350, 160], [250, 200]];
+    const pairs = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 2], [0, 5], [1, 3]];
+    cLines = pairs.map(([a, b]) => { const [x1, y1] = pts[a], [x2, y2] = pts[b], L = Math.hypot(x2 - x1, y2 - y1); const l = document.createElementNS(SVGNS, 'line'); Object.entries({ x1, y1, x2, y2 }).forEach(([k, v]) => l.setAttribute(k, v)); l.style.strokeDasharray = `${L} ${L}`; l.style.strokeDashoffset = reduce ? 0 : L; l.dataset.l = L; cst.appendChild(l); return l; });
+    pts.forEach(([x, y], i) => { const c = document.createElementNS(SVGNS, 'circle'); c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', i ? 2.4 : 3.6); if (!i) c.classList.add('one'); cst.appendChild(c); });
+  }
+  const six = $('#six');
+  if (six && !reduce) { six.textContent = '1'; const sio = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; sio.disconnect(); let n = 1; const t = setInterval(() => { six.textContent = String(++n); if (n >= 6) clearInterval(t); }, 140); }, { threshold: .6 }); sio.observe(six); }
 
   /* ---------- entradas suaves ---------- */
   const inkSel = '.sec .d-lg, .sec-p, .note, .open-card, .rit li, .calm-grid > div, .faq details, .off-yes, .stat, .prose > *, .sheet-head > *, .ring-wrap';
@@ -172,6 +219,7 @@
   $$(inkSel).forEach(n => { n.classList.add('ink'); io.observe(n); });
 
   /* ---------- un solo bucle de scroll ---------- */
+  const driftB = $('#drift-b'), sky = $('#sky');
   const bar = $('#bar'), hero = $('.hero'), ringSec = $('.ring-sec'), chatSec = $('.chat-sec');
   const strikes = $$('.strike li');
   const along = (n, a, b) => { const r = n.getBoundingClientRect(), H = innerHeight; return clamp((H * a - r.top) / (H * (a - b))); };
@@ -183,6 +231,9 @@
     if (y > 500 && y > lastY + 4) bar.classList.add('hide'); else if (y < lastY - 4 || y < 500) bar.classList.remove('hide');
     lastY = y;
     let again = false;
+    if (!reduce && y < hero.offsetHeight) { const hp = y / hero.offsetHeight; driftB.style.transform = `translate(${(hp * 70).toFixed(1)}px, ${(hp * 160).toFixed(1)}px) rotate(${(hp * 18).toFixed(1)}deg) scale(${(1 - hp * .35).toFixed(3)})`; sky.style.transform = `translateY(${(hp * 60).toFixed(1)}px)`; }
+    if (!reduce && near(shore)) renderShore(along(shore, .92, .25));
+    if (!reduce && cst && near(cst)) { const p = along(cst, 1, .3) * cLines.length; cLines.forEach((l, i) => l.style.strokeDashoffset = (+l.dataset.l * (1 - clamp(p - i * .8))).toFixed(1)); }
     if (near(ringSec)) again = renderRing(reduce ? 1 : along($('.ring-wrap'), .95, .4)) || again;
     if (!reduce && near(chatSec)) { const p = along(chatSec, .7, -.1); const k = Math.min(3, Math.floor(p * 4)); stages.forEach((s, i) => s.classList.toggle('on', i <= k)); }
     if (!reduce) strikes.forEach(li => { if (near(li)) li.style.setProperty('--s', along(li, .85, .55).toFixed(3)); });

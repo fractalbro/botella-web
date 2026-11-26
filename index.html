@@ -37,7 +37,7 @@
   <!-- Portada: la noche de la app -->
   <section class="hero" aria-labelledby="h1">
     <svg class="sky" id="sky" aria-hidden="true"></svg>
-    <div class="hero-bottle" aria-hidden="true"><div class="bob" id="hero-bottle"></div></div>
+    <div class="hero-bottle" aria-hidden="true"><div class="drift-b" id="drift-b"><div class="bob" id="hero-bottle"></div></div></div>
     <div class="hero-in wrap">
       <h1 id="h1" class="d-xl">Lanza tu voz <span class="nb">al mar.</span></h1>
       <p class="lead">Graba una pregunta. La escuchan ocho personas de Lima con tus gustos, y quien quiere te responde con su voz.</p>
@@ -57,6 +57,7 @@
         <div class="topics" role="tablist" aria-label="Elige una botella" id="topics"></div>
       </div>
       <div class="open-card">
+        <div class="pop" id="pop" aria-hidden="true"></div>
         <article class="paper" id="paper" aria-live="polite">
           <p class="paper-m" id="paper-m">Pregunta de alguien que ama la música</p>
           <p class="paper-q" id="paper-q">¿Qué harías un domingo si nadie en esta ciudad te conociera?</p>
@@ -76,6 +77,7 @@
     <div class="wrap ring-in">
       <h2 id="h-voz" class="d-lg">Una voz dice más que mil fotos.</h2>
       <div class="ring-wrap">
+        <span class="sonar" aria-hidden="true"></span><span class="sonar s2" aria-hidden="true"></span>
         <svg class="ring" id="ring" viewBox="-160 -160 320 320" aria-hidden="true"></svg>
         <button class="ring-play" type="button" data-play="leo" aria-label="Escuchar una voz de verdad"><span class="ico" data-ico="play"></span></button>
       </div>
@@ -212,11 +214,12 @@
   <!-- Por qué -->
   <section class="sec why" id="por-que" aria-labelledby="h-why">
     <svg class="sky sky-low" id="sky2" aria-hidden="true"></svg>
+    <svg class="const" id="const" viewBox="0 0 400 220" aria-hidden="true"></svg>
     <div class="wrap why-in">
       <h2 id="h-why" class="d-lg">Si tantos se sienten solos, nadie está tan solo como cree.</h2>
       <div class="why-grid">
         <figure class="stat">
-          <p class="stat-n">1<small>de cada</small>6</p>
+          <p class="stat-n">1<small>de cada</small><span id="six">6</span></p>
           <figcaption>personas en el mundo se siente sola. <a href="https://www.who.int/es/news-room/30-06-2025-social-connection-linked-to-improved-heath-and-reduced-risk-of-early-death" target="_blank" rel="noopener">OMS, 2025</a></figcaption>
         </figure>
         <div class="prose">
