@@ -257,3 +257,8 @@ details p{margin:-6px 0 24px;color:var(--muted);max-width:52ch;font-size:16.5px}
 .mom p{margin:0;color:var(--muted);font-size:15.5px}
 @media (min-width:860px){.mom-row{padding-left:max(var(--pad),calc((100vw - 1180px)/2 + 22px))}}
 .paper .btn-ink{margin-top:10px}
+
+/* Entrar y recuperar contraseña (llevan a la app) */
+.have{margin:14px 0 0;text-align:center;font-size:14px;color:rgba(0,0,0,.62)}
+.have a,.foot-row a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.have a{color:#1E6F66;font-weight:600}
