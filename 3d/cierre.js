@@ -2,7 +2,7 @@
 // 1) "Por qué": al bajar se van encendiendo luces en el mar, una por persona. Empieza con una sola
 //    ("nadie está tan solo como cree") y termina con el mar lleno.
 // 2) Registro: cuando guardas tu lugar, tu botella sale al mar y se encienden las 8 orillas.
-import { THREE, C, stage, bottle, sky, moon, ocean, seg, ease, lerp, MOBILE, rnd, seed, REDUCE } from './kit.js';
+import { THREE, C, stage, bottle, sky, moon, ocean, glow, seg, ease, lerp, MOBILE, rnd, seed, REDUCE } from './kit.js';
 const cl = x => Math.max(0, Math.min(1, x));
 
 function sea(S, { moonAt, amp = .7, fogFar = 260, noMoon = false }) {
@@ -16,23 +16,25 @@ function sea(S, { moonAt, amp = .7, fogFar = 260, noMoon = false }) {
 function lights(scene, n, spread, { z0 = -14, depth = 34, seedN = 21 } = {}) {
   seed(seedN); const out = [];
   for (let i = 0; i < n; i++) { const b = bottle({ light: 0 }); b.scale.setScalar(.6); b.userData.paper.material = b.userData.paper.material.clone(); b.userData.paper.material.emissiveIntensity = .08;
-    const g = new THREE.Group(); g.add(b); b.rotation.z = -1.45; const gl = new THREE.PointLight(C.orb[i % C.orb.length], 0, 7, 2); gl.position.y = .8; g.add(gl);
+    const g = new THREE.Group(); g.add(b); b.rotation.z = -1.45; const gl = glow(C.orb[i % C.orb.length], 3); gl.position.y = .4; g.add(gl); // brillo, no luz real: no recompila nada al encenderse
     g.userData = { x: (rnd() - .5) * spread, z: z0 - rnd() * depth, ph: rnd() * 6, ry: rnd() * 6, gl, paper: b.userData.paper, lit: 0 }; scene.add(g); out.push(g); }
   // la primera en encenderse queda al centro y cerca: es la tuya
   out[0].userData.x = MOBILE ? .4 : 2; out[0].userData.z = z0 + 4;
   return out;
 }
 function float(list, oc, t, on) { list.forEach((g, i) => { const u = g.userData; g.position.set(u.x, oc.hAt(u.x, u.z, t) + .1, u.z); g.rotation.y = u.ry; g.children[0].rotation.x = Math.sin(t + u.ph) * .2;
-  u.lit = lerp(u.lit, on(i), .08); u.gl.intensity = u.lit * 3.2; u.paper.material.emissiveIntensity = .08 + u.lit * .9; }); }
+  u.lit = lerp(u.lit, on(i), .08); u.gl.material.opacity = u.lit * .75; u.gl.scale.setScalar(1.1 + u.lit * 1.1); u.paper.material.emissiveIntensity = .08 + u.lit * .9; }); }
 
 // ---------- 1) Por qué ----------
 const why = document.getElementById('por-que'), cw = document.getElementById('gl-why');
 if (why && cw) {
   let vis = false, made = false; const prog = () => { const r = why.getBoundingClientRect(); return cl((innerHeight * .9 - r.top) / (r.height * .85)); };
-  // se arma recién cuando te acercas a la sección (no compite con la portada al cargar)
-  new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis && !made) { made = true; make(); } }, { rootMargin: '400px 0px' }).observe(why);
+  // se arma en un momento libre después de cargar (o antes, si ya te estás acercando) y compila en segundo plano
+  const once = () => { if (!made) { made = true; make(); } };
+  new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis) once(); }, { rootMargin: '1200px 0px' }).observe(why);
+  (window.requestIdleCallback || (f => setTimeout(f, 1500)))(once, { timeout: 4000 });
   const make = () => { try {
-    const S = stage(cw, { fov: MOBILE ? 50 : 32, bloom: [.5, .4, .9], progress: prog, active: () => vis });
+    const S = stage(cw, { fov: MOBILE ? 50 : 32, bloom: [.5, .4, .9], progress: prog, active: () => vis, budget: 1e6 });
     const { scene, camera } = S; const { sk, oc } = sea(S, { moonAt: new THREE.Vector3(MOBILE ? 9 : 46, MOBILE ? 4.5 : 7, -110), noMoon: MOBILE }); // en celular la luna chocaría con el texto: solo queda su reflejo
     const N = MOBILE ? 18 : 26, L = lights(scene, N, MOBILE ? 18 : 46);
     S.on((t, p) => { sk.update(t); oc.update(t);
@@ -41,7 +43,7 @@ if (why && cw) {
       camera.position.set(Math.sin(t * .1) * .3, 2.2 + Math.sin(t * .2) * .08, 10); camera.lookAt(0, 2.2, -10);
       // el horizonte baja: el mar queda detrás del final de la sección y el texto de arriba se lee sobre el cielo
       const w = cw.clientWidth, h = cw.clientHeight; camera.setViewOffset(w, h, 0, -h * (MOBILE ? .2 : .12), w, h); camera.updateProjectionMatrix(); });
-    document.documentElement.classList.add('why-3d');
+    S.go().then(() => document.documentElement.classList.add('why-3d'));
   } catch (e) { console.warn(e); } };
 }
 
@@ -52,7 +54,7 @@ if (done && cd) {
   const start = () => {
     if (S || done.hidden) return;
     try {
-      S = stage(cd, { fov: 40, bloom: [.5, .4, .9], progress: () => 0, active: () => vis && !done.hidden });
+      S = stage(cd, { fov: 40, bloom: [.5, .4, .9], progress: () => 0, active: () => vis && !done.hidden, budget: 4e5 });
       const { scene, camera } = S; const { sk, oc } = sea(S, { moonAt: new THREE.Vector3(-14, 9, -110), fogFar: 200 });
       const L = lights(scene, 8, 13, { z0: -9, depth: 12, seedN: 8 });
       const b = bottle({ light: 2 }); b.position.y = -1.4; const hold = new THREE.Group(); hold.add(b); const root = new THREE.Group(); root.add(hold); root.scale.setScalar(1); scene.add(root);
@@ -65,7 +67,7 @@ if (done && cd) {
           rings.forEach((r, i) => { const q = cl((k - .9 - i * .14) / 1.1); r.position.set(HS.x, oc.hAt(HS.x, HS.z, t) + .05, HS.z); r.scale.setScalar(.3 + ease(q) * (2.2 + i * .8)); r.material.opacity = q > 0 && q < 1 ? (1 - q) * .7 : 0; }); }
         float(L, oc, t, i => cl((k - 1.4) * 3 - i * .9));
         camera.position.set(0, 1.3, 6.5); camera.lookAt(0, .9, -6); });
-      cd.classList.add('on');
+      S.go().then(() => { t0 = null; cd.classList.add('on'); }); // el arco empieza cuando ya se ve
     } catch (e) { console.warn(e); cd.remove(); }
   };
   new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis) start(); }, { threshold: .3 }).observe(cd);

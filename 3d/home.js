@@ -1,11 +1,10 @@
 // Portada 3D de botella-web: mezcla de Sueño (la botella de vidrio) y El faro, sobre un solo mar.
 // Cuatro capítulos (.story .ch). El progreso va de 0 a 1 entre el inicio del primero y el inicio del último.
-import { THREE, C, stage, bottle, sky, moon, ocean, ribbon, orb, seg, ease, lerp, MOBILE, rnd, seed, animate, REDUCE } from './kit.js';
+import { THREE, C, stage, bottle, sky, moon, ocean, ribbon, orb, glow, seg, ease, lerp, MOBILE, rnd, seed, animate, REDUCE } from './kit.js';
 const story = document.getElementById('story'), chs = [...story.querySelectorAll('.ch')];
 const progress = () => { const y = scrollY, tops = chs.map(c => c.offsetTop); const n = tops.length - 1; if (y >= tops[n]) return 1; let i = 0; while (i < n - 1 && y >= tops[i + 1]) i++; return Math.max(0, Math.min(1, (i + (y - tops[i]) / (tops[i + 1] - tops[i])) / n)); };
 let inView = true; new IntersectionObserver(es => { inView = es[0].isIntersecting; document.documentElement.classList.toggle('gl-off', !inView); }).observe(story);
 let S; try { S = stage(document.getElementById('gl'), { fov: MOBILE ? 46 : 34, bloom: [0.55, 0.4, 0.9], progress, active: () => inView }); } catch (e) { document.documentElement.classList.remove('gl'); throw e; }
-document.documentElement.classList.add('gl-on');
 const { scene, camera } = S; scene.fog = new THREE.Fog('#0B2436', 60, 320); scene.environmentIntensity = .45;
 const sk = sky(scene, { hz: '#173E5C' });
 const mpos = MOBILE ? new THREE.Vector3(9, 26, -90) : new THREE.Vector3(26, 17, -90); const mo = moon(MOBILE ? 3 : 4); mo.position.copy(mpos); scene.add(mo);
@@ -29,7 +28,7 @@ const beamM = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, b
   fragmentShader: 'uniform float uT,uI; varying vec3 vN; varying vec3 vV; varying float vD; void main(){ float e=pow(abs(dot(vN,vV)),1.6); float a=e*(1.-smoothstep(0.,1.,vD))*smoothstep(0.,.02,vD)*.7*uI; a*=.85+.15*sin(vD*40.-uT*2.); gl_FragColor=vec4(vec3(1.,.9,.68)*a,a); }' });
 const pivot = new THREE.Group(); pivot.position.set(LX, SEA + 1.6 + LY, LZ); const beam = new THREE.Mesh(bgeo, beamM); pivot.add(beam); const beam2 = beam.clone(); beam2.rotation.y = Math.PI; pivot.add(beam2); scene.add(pivot);
 // ---- las otras botellas en el mar (las 8 personas, y 4 más) ----
-seed(12); const bots = []; for (let i = 0; i < 12; i++) { const b = bottle({ light: 0 }); b.scale.setScalar(.7); const g = new THREE.Group(); g.add(b); b.rotation.z = -1.45; const a = (i / 12) * Math.PI * 2 + rnd() * .3, r = 9 + rnd() * 14; g.userData = { x: Math.cos(a) * r * (MOBILE ? .7 : 1.3), z: -14 + Math.sin(a) * r * .9, ph: rnd() * 6, ry: rnd() * 6, i }; const gl = new THREE.PointLight(i < 8 ? C.a : '#FFC24B', 0, 6, 2); gl.position.y = .8; g.add(gl); g.userData.gl = gl; g.visible = false; scene.add(g); bots.push(g); }
+seed(12); const bots = []; for (let i = 0; i < 12; i++) { const b = bottle({ light: 0 }); b.scale.setScalar(.7); const g = new THREE.Group(); g.add(b); b.rotation.z = -1.45; const a = (i / 12) * Math.PI * 2 + rnd() * .3, r = 9 + rnd() * 14; g.userData = { x: Math.cos(a) * r * (MOBILE ? .7 : 1.3), z: -14 + Math.sin(a) * r * .9, ph: rnd() * 6, ry: rnd() * 6, i }; const gl = glow(i < 8 ? C.a : '#FFC24B', 3.2); gl.position.y = .4; g.add(gl); g.userData.gl = gl; gl.userData.v = 0; g.visible = false; scene.add(g); bots.push(g); }
 // ---- la botella protagonista (de la 1) ----
 const root = new THREE.Group(); scene.add(root); const b = bottle({ light: 2 }); b.position.y = -1.4; const holder = new THREE.Group(); holder.add(b); holder.rotation.z = -1.25; root.add(holder);
 // pantallas bajas (iPhone SE): botella más chica y más arriba para que no tape el titular
@@ -60,7 +59,7 @@ S.on((t, p) => {
   const reach8 = seg(p, .56, .68), reach4 = seg(p, .66, .74);
   bots.forEach(g => { const u = g.userData; g.visible = c2 > .5; g.position.set(u.x, oc.hAt(u.x, u.z, t) + SEA + .15, u.z); g.rotation.y = u.ry; g.children[0].rotation.x = Math.sin(t + u.ph) * .2;
     to.set(u.x - pivot.position.x, 0, u.z - pivot.position.z).normalize(); const hit = Math.pow(Math.max(0, dir.dot(to)), 300) + Math.pow(Math.max(0, -dir.dot(to)), 300);
-    const on = u.i < 8 ? seg(reach8, u.i / 10, u.i / 10 + .2) : seg(reach4, (u.i - 8) / 6, (u.i - 8) / 6 + .3); u.gl.intensity = lerp(u.gl.intensity, hit * 14 + on * 7 + c3 * 4, .15); });
+    const on = u.i < 8 ? seg(reach8, u.i / 10, u.i / 10 + .2) : seg(reach4, (u.i - 8) / 6, (u.i - 8) / 6 + .3); u.gl.userData.v = lerp(u.gl.userData.v, Math.min(1, hit * 1.6 + on * .8 + c3 * .45), .15); u.gl.material.opacity = u.gl.userData.v * .8; u.gl.scale.setScalar(1.4 + u.gl.userData.v * 1.4); });
   // cámara: de cerca a la botella (1-2) → baja al mar y mira hacia el faro (3) → sube a ver la marea (4)
   const nearC = new THREE.Vector3(lerp(0, MOBILE ? .6 : -1, c1) + S.pointer.x * .3, lerp(1.6, 2.4, c1), lerp(14, MOBILE ? 10 : 13, c1));
   const nearL = new THREE.Vector3(lerp(MOBILE ? 0 : -1.4, root.position.x * .6, c1), lerp(MOBILE ? 1.5 : 1.6, root.position.y, c1), 0);
@@ -73,3 +72,5 @@ S.on((t, p) => {
 const tc = document.getElementById('paper');
 if (tc && !REDUCE) { tc.addEventListener('pointermove', e => { const r = tc.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, yy = (e.clientY - r.top) / r.height - .5; tc.style.transform = `perspective(1000px) rotateY(${x * 10}deg) rotateX(${-yy * 10}deg)`; });
   tc.addEventListener('pointerleave', () => animate(tc, { rotateX: 0, rotateY: 0, duration: 500, ease: 'outElastic(1,.6)' })); }
+// todo listo y compilado: recién ahí aparece el 3D (antes se ve la portada de siempre)
+S.go().then(() => document.documentElement.classList.add('gl-on'));
