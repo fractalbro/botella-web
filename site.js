@@ -274,7 +274,7 @@
       $('#done-access').hidden = false;
     } else {
       $('#done-eye').textContent = 'Lista de espera';
-      $('#done-h').textContent = `${first ? first + ', estás' : 'Estás'} en la orilla.`;
+      $('#done-h').textContent = `${first ? first + ', ya' : 'Ya'} tienes tu lugar en la lista.`;
       $('#done-p').textContent = `Se llenaron los primeros lugares. Eres el número ${r.place} de la lista y te escribimos por WhatsApp apenas se abra el tuyo.`;
       $('#done-access').hidden = true;
     }
