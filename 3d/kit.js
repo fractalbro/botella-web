@@ -15,9 +15,9 @@ const col = h => new THREE.Color(h);
 let _s = 7; export const rnd = () => (_s = (_s * 9301 + 49297) % 233280) / 233280; export const seed = n => { _s = n; };
 
 // ---------- escenario: render, entorno, bloom, bucle y progreso de scroll ----------
-export function stage(canvas, { fov = 35, bloom = [0.5, 0.35, 0.92], exposure = 1, ortho = 0, bg = C.bg, progress = null, active = null, budget = 1.4e6 } = {}) {
+export function stage(canvas, { fov = 35, bloom = [0.5, 0.35, 0.92], exposure = 1, ortho = 0, bg = C.bg, progress = null, active = null, budget = 8e6 } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-  renderer.transmissionResolutionScale = .5; // el vidrio dibuja la escena una vez más: a media resolución no se nota
+  renderer.transmissionResolutionScale = 1; // vidrio a resolución completa (Cesar prefiere nitidez)
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = exposure;
   const scene = new THREE.Scene(); scene.background = col(bg);
   const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.55;
@@ -200,11 +200,13 @@ export function warm(renderer, scene, camera) {
   return p.catch(() => {});
 }
 // ---------- nitidez que se ajusta sola para sostener 60 cuadros ----------
-export function autoRes(renderer, composer, { budget = 1.4e6, min = .5 } = {}) {
-  const cap = () => Math.min(devicePixelRatio || 1, 2); let pr = 1, ema = 16.7, n = 0, w = 0, h = 0;
+// Cesar quiere nitidez completa: nunca baja de 80% de la densidad de la pantalla. Lo que se ahorra sale del brillo (bloom) a media resolución.
+export function autoRes(renderer, composer, { budget = 8e6, min = null } = {}) {
+  const cap = () => Math.min(devicePixelRatio || 1, 2); let pr = 1, ema = 16.7, n = 0, w = 0, h = 0; if (min == null) min = cap() * .8;
+  composer?.passes?.forEach(ps => { if (ps.isUnrealBloomPass || ps.constructor?.name === 'UnrealBloomPass' || ps.nMips) { const o = ps.setSize.bind(ps); ps.setSize = (W, H) => o(Math.max(2, W / 2), Math.max(2, H / 2)); } });
   const apply = () => { renderer.setPixelRatio(pr); composer?.setPixelRatio?.(pr); if (w) { renderer.setSize(w, h, false); composer?.setSize(w, h); } };
   return {
-    size(W, H) { w = W; h = H; pr = Math.min(cap(), Math.sqrt(budget / Math.max(1, w * h))); apply(); },
+    size(W, H) { w = W; h = H; pr = Math.max(min, Math.min(cap(), Math.sqrt(budget / Math.max(1, w * h)))); apply(); },
     tick(dt) { if (!dt || dt > 250) return; ema += (dt - ema) * .08; if (++n < 40) return; n = 0;
       if (ema > 19 && pr > min) { pr = Math.max(min, pr * .85); apply(); } else if (ema < 14 && pr < Math.min(cap(), Math.sqrt(budget / Math.max(1, w * h)))) { pr = Math.min(cap(), pr * 1.08); apply(); } },
     get pr() { return pr; }

@@ -34,7 +34,7 @@ if (why && cw) {
   new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis) once(); }, { rootMargin: '1200px 0px' }).observe(why);
   (window.requestIdleCallback || (f => setTimeout(f, 1500)))(once, { timeout: 4000 });
   const make = () => { try {
-    const S = stage(cw, { fov: MOBILE ? 50 : 32, bloom: [.5, .4, .9], progress: prog, active: () => vis, budget: 1e6 });
+    const S = stage(cw, { fov: MOBILE ? 50 : 32, bloom: [.5, .4, .9], progress: prog, active: () => vis });
     const { scene, camera } = S; const { sk, oc } = sea(S, { moonAt: new THREE.Vector3(MOBILE ? 9 : 46, MOBILE ? 4.5 : 7, -110), noMoon: MOBILE }); // en celular la luna chocaría con el texto: solo queda su reflejo
     const N = MOBILE ? 18 : 26, L = lights(scene, N, MOBILE ? 18 : 46);
     S.on((t, p) => { sk.update(t); oc.update(t);
@@ -54,7 +54,7 @@ if (done && cd) {
   const start = () => {
     if (S || done.hidden) return;
     try {
-      S = stage(cd, { fov: 40, bloom: [.5, .4, .9], progress: () => 0, active: () => vis && !done.hidden, budget: 4e5 });
+      S = stage(cd, { fov: 40, bloom: [.5, .4, .9], progress: () => 0, active: () => vis && !done.hidden });
       const { scene, camera } = S; const { sk, oc } = sea(S, { moonAt: new THREE.Vector3(-14, 9, -110), fogFar: 200 });
       const L = lights(scene, 8, 13, { z0: -9, depth: 12, seedN: 8 });
       const b = bottle({ light: 2 }); b.position.y = -1.4; const hold = new THREE.Group(); hold.add(b); const root = new THREE.Group(); root.add(hold); root.scale.setScalar(1); scene.add(root);
