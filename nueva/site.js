@@ -48,7 +48,7 @@ $$('.band .wrap, .struck').forEach(w => { if (!w.classList.contains('struck')) {
 
 // registro: la misma función join_waitlist del sitio actual
 const rpc = (fn, body) => fetch(`${CFG.url}/rest/v1/rpc/${fn}`, { method: 'POST', headers: { apikey: CFG.key, Authorization: `Bearer ${CFG.key}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) }).then(async r => { const j = await r.json().catch(() => null); if (!r.ok) { const e = new Error((j && j.message) || r.statusText); e.status = r.status; e.code = j && j.code; throw e; } return j; });
-rpc('waitlist_left').then(n => { if (typeof n === 'number') $('#left').textContent = n > 0 ? (n === 1 ? 'Queda 1 lugar.' : `Quedan ${n} lugares.`) : 'Los cien lugares se llenaron. Te anotamos en la lista.'; }).catch(() => {});
+rpc('waitlist_left').then(n => { if (typeof n === 'number') $('#left').textContent = n > 0 ? (n === 1 ? 'Queda 1 lugar. Déjanos tu nombre y es tuyo.' : `Quedan ${n} lugares. Déjanos tu nombre y te guardamos uno.`) : 'Los cien lugares se llenaron. Te anotamos en la lista.'; }).catch(() => {});
 const ref = new URLSearchParams(location.search).get('de');
 const done = r => { const f = $('#f'); f.hidden = true; const d = $('#done'); d.hidden = false;
   d.innerHTML = r.granted ? `<h3>Listo, ${esc(r.name)}.</h3><p>Tu lugar está guardado. Entra y abre tu primera botella.</p><a class="btn btn-a" href="${esc(r.link)}">Abrir Botella</a>` : `<h3>Estás en la lista, ${esc(r.name)}.</h3><p>Te escribimos apenas se abra un lugar.</p>`; };
