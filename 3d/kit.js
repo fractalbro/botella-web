@@ -57,7 +57,10 @@ export function stage(canvas, { fov = 35, bloom = [0.5, 0.35, 0.92], exposure = 
 export function bottle({ paper = true, light = 1.2, tint = '#CFF5EE' } = {}) {
   const g = new THREE.Group();
   const P = [[0, 0], [0.42, 0], [0.5, 0.06], [0.52, 0.2], [0.52, 1.45], [0.5, 1.62], [0.4, 1.82], [0.26, 1.98], [0.18, 2.1], [0.17, 2.6], [0.2, 2.64], [0.2, 2.74], [0.16, 2.78]].map(([x, y]) => new THREE.Vector2(x, y));
-  const glass = new THREE.MeshPhysicalMaterial({ color: col(tint), transmission: 1, thickness: 0.35, roughness: 0.06, ior: 1.42, clearcoat: 1, clearcoatRoughness: 0.08, attenuationColor: col(C.a), attenuationDistance: 3, specularIntensity: 1, envMapIntensity: 1.4, side: THREE.DoubleSide, transparent: true });
+  // vidrio sin "transmission": la transmisión real obliga a dibujar toda la escena dos veces por cuadro.
+  // Transparente + reflejos (clearcoat y entorno) se ve casi igual en una botella y cuesta mucho menos.
+  const glass = new THREE.MeshPhysicalMaterial({ color: col(tint), transparent: true, opacity: 0.16, roughness: 0.04, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05, specularIntensity: 1, envMapIntensity: 1.3, side: THREE.DoubleSide, depthWrite: false });
+  glass.userData.glass = true;
   const body = new THREE.Mesh(new THREE.LatheGeometry(P, 72), glass); g.add(body);
   const cork = new THREE.Mesh(new THREE.CylinderGeometry(0.165, 0.15, 0.36, 32), new THREE.MeshStandardMaterial({ color: col(C.cork), roughness: 0.85 }));
   cork.position.y = 2.82; g.add(cork); g.userData.cork = cork;
