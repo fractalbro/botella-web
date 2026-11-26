@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Botella · Lanza tu voz al mar</title>
-<meta name="description" content="Graba una pregunta con tu voz y lánzala al mar. Llega a ocho personas afines en Lima y quien quiere, te responde. Sin fotos, sin likes: vales por lo que dices.">
-<meta name="theme-color" content="#9DCBE0">
+<meta name="description" content="Graba una pregunta con tu voz y lánzala al mar. Llega a ocho personas de Lima con tus gustos y quien quiere, te responde. Sin fotos, sin likes: vales por lo que dices.">
+<meta name="theme-color" content="#05121F">
 <link rel="icon" href="/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <link rel="canonical" href="https://botella-web-snowy.vercel.app/">
@@ -18,148 +18,152 @@
 <meta property="og:image" content="https://botella-web-snowy.vercel.app/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Una carta náutica del mar de Lima: la ruta de una botella llega a ocho orillas. Texto: Lanza tu voz al mar.">
+<meta property="og:image:alt" content="Una botella que brilla en el mar de noche, bajo la luna. Texto: Lanza tu voz al mar.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@400;700&family=Familjen+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap">
 <link rel="stylesheet" href="/site.css">
 </head>
 <body>
 
 <header class="bar" id="bar">
-  <a href="#top" class="wm" aria-label="Botella, inicio">Botella</a>
-  <span class="mono bar-sheet" id="sheet" aria-hidden="true">Hoja 01 · Lima</span>
+  <a href="#top" class="wm" aria-label="Botella, inicio">botella</a>
   <a href="#entrar" class="bar-cta">Quiero probarla</a>
-  <span class="bar-rule" id="bar-rule" aria-hidden="true"></span>
 </header>
 
 <main id="top">
 
-  <!-- Portada: la carta del mar de Lima -->
+  <!-- Portada: la noche de la app -->
   <section class="hero" aria-labelledby="h1">
-    <svg class="hero-map" id="hero-map" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
-    <div class="hero-in">
-      <p class="mono coords"><span>12°07′S 77°02′W</span><span class="red">● 8 orillas</span></p>
-      <h1 id="h1" class="d-xl">Lanza tu voz al&nbsp;mar.</h1>
-      <p class="lead">Graba una pregunta. Llega a ocho personas de Lima con tus mismos gustos. Quien quiere, te responde con su voz.</p>
+    <svg class="sky" id="sky" aria-hidden="true"></svg>
+    <div class="hero-bottle" aria-hidden="true"><div class="bob" id="hero-bottle"></div></div>
+    <div class="hero-in wrap">
+      <h1 id="h1" class="d-xl">Lanza tu voz <span class="nb">al mar.</span></h1>
+      <p class="lead">Graba una pregunta. La escuchan ocho personas de Lima con tus gustos, y quien quiere te responde con su voz.</p>
       <div class="ctas">
-        <a class="btn" href="#entrar"><span>Quiero mi botella</span><span aria-hidden="true">→</span></a>
-        <button class="listen" type="button" data-play="majo">
-          <span class="listen-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
-          <span class="listen-t">Escuchar una botella</span>
-        </button>
+        <a class="btn btn-a" href="#entrar">Quiero mi botella</a>
+        <button class="btn btn-2" type="button" data-play="majo"><span class="ico" data-ico="play"></span><span class="listen-t">Escuchar una botella</span></button>
       </div>
     </div>
   </section>
 
-  <!-- Avistamientos: preguntas que flotan hoy -->
-  <div class="tape" aria-label="Preguntas que flotan hoy en Botella">
-    <div class="tape-track">
-      <span>¿Qué canción te devuelve a tus 15 años?</span><b>✕</b>
-      <span>¿Cuál es tu huarique favorito y por qué nadie lo conoce?</span><b>✕</b>
-      <span>¿Qué harías un domingo si nadie en esta ciudad te conociera?</span><b>✕</b>
-      <span>¿Qué le dirías a tu yo de hace diez años?</span><b>✕</b>
-      <span>¿Cuál es el mejor atardecer que has visto en Lima?</span><b>✕</b>
-    </div>
-  </div>
-
-  <!-- Botellas encontradas -->
-  <section class="sec found" id="voces" aria-labelledby="h-voces">
-    <div class="wrap">
-      <div class="sec-head">
-        <h2 id="h-voces" class="d-lg">Botellas encontradas en la orilla.</h2>
-        <p class="sec-note">Son voces de ejemplo, para que sepas cómo se siente. Las de verdad te esperan adentro.</p>
+  <!-- Abrir una botella -->
+  <section class="sec open" id="voces" aria-labelledby="h-open">
+    <div class="wrap open-in">
+      <div class="open-copy">
+        <h2 id="h-open" class="d-lg">Así se siente abrir una.</h2>
+        <p class="note">Estas son voces de ejemplo. Las de verdad te esperan adentro.</p>
+        <div class="topics" role="tablist" aria-label="Elige una botella" id="topics"></div>
       </div>
-      <ol class="finds" id="finds"></ol>
+      <div class="open-card">
+        <article class="paper" id="paper" aria-live="polite">
+          <p class="paper-m" id="paper-m">Pregunta de alguien que ama la música</p>
+          <p class="paper-q" id="paper-q">¿Qué harías un domingo si nadie en esta ciudad te conociera?</p>
+          <button class="player" type="button" id="player" aria-label="Escuchar esta botella">
+            <span class="pb"><span class="ico" data-ico="play"></span></span>
+            <span class="wv" id="paper-wv"></span>
+            <span class="t" id="paper-t">0:14</span>
+          </button>
+        </article>
+        <a class="btn btn-a btn-full" href="#entrar"><span class="ico" data-ico="mic"></span>Responder con mi voz</a>
+      </div>
     </div>
   </section>
 
-  <!-- Por dentro: la bitácora que se llena al bajar -->
-  <section class="log" id="como" aria-labelledby="h-como">
-    <div class="log-stage">
-      <div class="log-head wrap">
-        <h2 id="h-como" class="d-md">Bitácora de una botella.</h2>
-        <p class="mono log-clock" aria-hidden="true"><span id="log-time">21:04</span> · <span id="log-step">1/8</span></p>
+  <!-- Anillo de voz -->
+  <section class="sec ring-sec" id="voz" aria-labelledby="h-voz">
+    <div class="wrap ring-in">
+      <h2 id="h-voz" class="d-lg">Una voz dice más que mil fotos.</h2>
+      <div class="ring-wrap">
+        <svg class="ring" id="ring" viewBox="-160 -160 320 320" aria-hidden="true"></svg>
+        <button class="ring-play" type="button" data-play="leo" aria-label="Escuchar una voz de verdad"><span class="ico" data-ico="play"></span></button>
       </div>
-      <div class="log-map" aria-hidden="true"><svg id="log-map" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet"></svg></div>
-      <div class="log-book wrap">
-        <ol class="entries" id="entries">
-          <li><time>21:04</time><div><h3>Grabada</h3><p>Una pregunta con tu voz, hasta 60 segundos. Sin foto: aquí vales por lo que dices.</p></div></li>
-          <li><time>21:05</time><div><h3>Lanzada al mar</h3><p>La sueltas y se va. Nadie sabe cómo te ves, solo cómo suenas.</p></div></li>
-          <li><time>21:05</time><div><h3>Llegó a ocho orillas</h3><p>La escuchan ocho personas de Lima a las que les gusta lo mismo que a ti.</p></div></li>
-          <li><time>03:05</time><div><h3>Subió la marea <span class="red">+4</span></h3><p>Si en seis horas nadie responde, la marea la lleva a cuatro orillas más.</p></div></li>
-          <li><time>08:12</time><div><h3>Descorchada</h3><p>Alguien que ama el cine la abre y te escucha. Con calma, de verdad.</p></div></li>
-          <li><time>08:15</time><div><h3>Respuesta de voz</h3><p>Su voz llega tal cual es. En Botella ninguna voz se modifica.</p></div></li>
-          <li><time>08:40</time><div><h3>Conversación</h3><p>Privada y con voz. Los une un tema en común, no una foto.</p></div></li>
-          <li><time>22:10</time><div><h3>Dos llaves</h3><p>Cada uno pone su llave cuando quiere. Si los dos la ponen, aparecen sus nombres.</p></div></li>
+      <p class="ring-cap" id="ring-cap">Escucha una botella de verdad · 0:13</p>
+      <p class="sec-p">Sin foto, sin perfil, sin filtro. Solo cómo hablas, de qué te ríes y qué te importa. Así se empieza en Botella.</p>
+    </div>
+  </section>
+
+  <!-- La conversación -->
+  <section class="sec chat-sec" id="como" aria-labelledby="h-chat">
+    <div class="wrap chat-in">
+      <div>
+        <h2 id="h-chat" class="d-lg">Primero se escuchan. Después, si los dos quieren, se conocen.</h2>
+        <p class="sec-p">Cada paso se abre cuando los dos ponen su llave. Nadie ve tu cara ni tu nombre antes.</p>
+        <ol class="stages" id="stages" aria-label="Pasos de una conversación">
+          <li class="on">Voces</li><li>Nombres</li><li>Llamada</li><li>Plan</li>
         </ol>
       </div>
-    </div>
-  </section>
-
-  <!-- Leyenda: rituales -->
-  <section class="sec legend" aria-labelledby="h-leg">
-    <div class="wrap">
-      <div class="sec-head">
-        <h2 id="h-leg" class="d-lg">Leyenda de la carta.</h2>
-        <p class="sec-note">Pequeños rituales para conversaciones grandes.</p>
+      <div class="chat" id="chat" aria-hidden="true">
+        <div class="bub them"><span class="pb"><span class="ico" data-ico="play"></span></span><span class="wv" data-seed="3"></span><span class="t">0:14</span></div>
+        <div class="bub me"><span class="pb"><span class="ico" data-ico="play"></span></span><span class="wv" data-seed="8"></span><span class="t">0:22</span></div>
+        <div class="bub them"><span class="pb"><span class="ico" data-ico="play"></span></span><span class="wv" data-seed="13"></span><span class="t">0:31</span></div>
+        <div class="key-row"><span class="key-pill"><span class="ico" data-ico="key"></span>Puso su llave. Falta la tuya.</span></div>
       </div>
-      <dl class="keys">
-        <div class="key"><dt><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 16q4-5 8 0t8 0 8 0 8 0M4 24q4-5 8 0t8 0 8 0 8 0"/></svg><span class="mono">21:00</span></dt><dd><h3>Cada noche sube la marea</h3><p>A las nueve llegan las botellas más escuchadas del día. Buen momento para ponerte audífonos.</p></dd></div>
-        <div class="key"><dt><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 8v24M8 20h24"/></svg><span class="mono">+1</span></dt><dd><h3>Responder te regala otra botella</h3><p>Cada respuesta tuya te da una botella nueva para lanzar. Mientras más escuchas, más te escuchan.</p></dd></div>
-        <div class="key"><dt><svg viewBox="0 0 40 40" aria-hidden="true"><path class="fill-red" d="M20 5c3 0 4 3 7 3s5 2 5 5 3 4 3 7-3 4-3 7-2 5-5 5-4 3-7 3-4-3-7-3-5-2-5-5-3-4-3-7 3-4 3-7 2-5 5-5 4-3 7-3z"/></svg><span class="mono">Lacre</span></dt><dd><h3>Una botella sellada de regalo</h3><p>Cuando una conversación te alegra el día, mándale una botella dorada a esa persona.</p></dd></div>
-        <div class="key"><dt><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="14" cy="20" r="7"/><path d="M21 20h14M30 20v6M35 20v4"/></svg><span class="mono">Llave</span></dt><dd><h3>Tú decides cuándo mostrarte</h3><p>Cada uno pone su llave. Si los dos la ponen, se abre su nombre, su foto o una llamada.</p></dd></div>
-        <div class="key"><dt><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 34s11-10 11-18a11 11 0 00-22 0c0 8 11 18 11 18z"/><circle cx="20" cy="16" r="4"/></svg><span class="mono">Tierra</span></dt><dd><h3>Del audio al café</h3><p>Si la conversación da para más, propón un plan en un lugar público. El malecón queda cerca.</p></dd></div>
-      </dl>
     </div>
   </section>
 
-  <!-- Fuera del mapa -->
+  <!-- 8 personas y la marea -->
+  <section class="sec reach" aria-labelledby="h-reach">
+    <div class="wrap reach-in">
+      <h2 id="h-reach" class="d-lg">Te escuchan ocho. Si hace falta, la marea la lleva a cuatro más.</h2>
+      <div class="shore" id="shore" aria-hidden="true"></div>
+      <p class="sec-p">Tu botella llega a 8 personas de Lima a las que les gusta lo mismo que a ti. Si en 6 horas nadie responde, viaja a 4 orillas más. Te conocen por lo que te gusta, nunca por tu distrito.</p>
+    </div>
+  </section>
+
+  <!-- Rituales -->
+  <section class="sec rituals" aria-labelledby="h-rit">
+    <div class="wrap">
+      <h2 id="h-rit" class="d-lg">Pequeños rituales para conversaciones grandes.</h2>
+      <ul class="rit">
+        <li><span class="rit-i" data-ico="tide"></span><div><h3>Cada noche sube la marea</h3><p>A las 21:00 llegan las botellas más escuchadas del día. Buen momento para ponerte audífonos.</p></div></li>
+        <li><span class="rit-i" data-ico="plus"></span><div><h3>Responder te regala otra botella</h3><p>Mientras más escuchas, más te escuchan.</p></div></li>
+        <li><span class="rit-i" data-ico="seal"></span><div><h3>El lacre</h3><p>Cuando una conversación te alegra el día, mándale una botella sellada de regalo.</p></div></li>
+        <li><span class="rit-i" data-ico="key"></span><div><h3>Tú decides cuándo mostrarte</h3><p>Si los dos ponen su llave, se abre su nombre, su foto o una llamada.</p></div></li>
+        <li><span class="rit-i" data-ico="pin"></span><div><h3>Del audio al café</h3><p>Si la conversación da para más, propón un plan en un lugar público.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Lo que no hay -->
   <section class="sec off" aria-labelledby="h-off">
     <div class="wrap">
-      <h2 id="h-off" class="mono off-k">Fuera del mapa</h2>
+      <h2 id="h-off" class="d-lg off-h">Aquí no hay</h2>
       <ul class="strike">
-        <li><s>Juzgar por la foto</s></li>
-        <li><s>Likes</s></li>
-        <li><s>Seguidores</s></li>
-        <li><s>Deslizar a la izquierda</s></li>
-        <li><s>Filtros de belleza</s></li>
+        <li><s>fotos de perfil</s></li><li><s>likes</s></li><li><s>seguidores</s></li><li><s>deslizar a la izquierda</s></li><li><s>filtros de belleza</s></li>
       </ul>
-      <p class="d-md off-yes">Lo que sí: una voz, una pregunta y <span class="red">tiempo</span> para escuchar.</p>
+      <p class="off-yes">Hay una voz, una pregunta y <b>tiempo</b> para escuchar.</p>
     </div>
   </section>
 
-  <!-- Aguas tranquilas -->
+  <!-- Seguridad -->
   <section class="sec calm" aria-labelledby="h-calm">
     <div class="wrap">
-      <div class="sec-head">
-        <h2 id="h-calm" class="d-lg">Aguas tranquilas.</h2>
-        <p class="sec-note">Aquí se cuida la conversación.</p>
-      </div>
+      <h2 id="h-calm" class="d-lg">Aquí se cuida la conversación.</h2>
       <div class="calm-grid">
-        <div><p class="mono">I</p><h3>Anónimo</h3><p>Te conocen por tu voz y por lo que te gusta. Tu nombre aparece solo si los dos deciden compartirlo. Tu correo y tu número nunca se muestran.</p></div>
-        <div><p class="mono">II</p><h3>Solo mayores de 18</h3><p>Un espacio de personas adultas que quieren conversar.</p></div>
-        <div><p class="mono">III</p><h3>Reportar es un toque</h3><p>Una botella con dos reportes se apaga sola. Revisamos cada caso.</p></div>
+        <div><span class="rit-i" data-ico="lock"></span><h3>Anónimo hasta que quieras</h3><p>Te conocen por tu voz y por lo que te gusta. Tu correo, tu número y tu distrito nunca se muestran.</p></div>
+        <div><span class="rit-i" data-ico="adult"></span><h3>Solo mayores de 18</h3><p>Un espacio de personas adultas que quieren conversar.</p></div>
+        <div><span class="rit-i" data-ico="flag"></span><h3>Reportar es un toque</h3><p>Una botella con dos reportes se apaga sola. Revisamos cada caso.</p></div>
       </div>
     </div>
   </section>
 
   <!-- Registro -->
-  <section class="join" id="entrar" aria-labelledby="h-join">
+  <section class="sec join" id="entrar" aria-labelledby="h-join">
     <div class="wrap">
-      <div class="ticket">
-        <div class="ticket-head">
-          <p class="mono ticket-no">Pase N.º <span id="pass-no">001</span> de 100 · Lima</p>
+      <div class="sheet">
+        <div class="sheet-head">
+          <p class="pass">Lugar <b id="pass-no">001</b> de 100 · Lima</p>
           <h2 id="h-join" class="d-lg">Te guardo tu botella.</h2>
-          <p class="sec-note">No buscamos a todos. Buscamos a 100 personas en Lima con ganas de conversar. Deja tus datos y recibe al toque tu acceso. Es gratis y se abre en el navegador de tu celular.</p>
-          <p class="left mono" id="left" hidden></p>
+          <p class="sec-p">No buscamos a todos. Buscamos a 100 personas en Lima con ganas de conversar. Deja tus datos y recibe al toque tu acceso. Es gratis y se abre en el navegador de tu celular.</p>
+          <p class="left" id="left" hidden></p>
         </div>
 
         <form id="form" class="form" novalidate>
-          <label class="f"><span class="mono">Nombre o apodo</span><input name="name" autocomplete="given-name" maxlength="60" required placeholder="Cómo quieres que te llamen"></label>
-          <label class="f"><span class="mono">WhatsApp</span><span class="tel"><b>+51</b><input name="phone" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="20" required placeholder="987 654 321"></span><small>Solo para avisarte de novedades. Nunca se muestra a nadie.</small></label>
-          <label class="f"><span class="mono">¿Por dónde vives?</span>
+          <label class="f"><span>Nombre o apodo</span><input name="name" autocomplete="given-name" maxlength="60" required placeholder="Cómo quieres que te llamen"></label>
+          <label class="f"><span>WhatsApp</span><span class="tel"><b>+51</b><input name="phone" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="20" required placeholder="987 654 321"></span><small>Solo para avisarte de novedades. Nunca se muestra a nadie.</small></label>
+          <label class="f"><span>¿Por dónde vives?</span>
             <select name="district">
               <option value="">Elige tu distrito</option>
               <option>Barranco</option><option>Miraflores</option><option>San Isidro</option><option>Surco</option><option>Lince</option><option>Magdalena</option><option>Jesús María</option><option>Pueblo Libre</option><option>San Miguel</option><option>San Borja</option><option>La Molina</option><option>Chorrillos</option><option>Lima Centro</option><option>Los Olivos</option><option>Otro distrito</option>
@@ -168,16 +172,16 @@
           </label>
           <button type="button" class="check" role="checkbox" aria-checked="false" id="adult"><span class="box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span>Tengo 18 años o más</span></button>
           <p class="err" id="err" role="alert" aria-live="assertive"></p>
-          <button class="btn btn-full" type="submit" id="go"><span>Quiero mi botella</span><span aria-hidden="true">→</span></button>
+          <button class="btn btn-a btn-full" type="submit" id="go"><span>Quiero mi botella</span></button>
         </form>
 
         <div class="done" id="done" hidden aria-live="polite">
-          <p class="mono" id="done-eye">Listo</p>
+          <p class="pass" id="done-eye">Listo</p>
           <h3 class="d-lg" id="done-h"></h3>
-          <p class="sec-note" id="done-p"></p>
+          <p class="sec-p" id="done-p"></p>
           <div id="done-access">
-            <a class="btn btn-full" id="open" href="https://botella-app.vercel.app/?c=BOTELLA-01"><span>Abrir Botella</span><span aria-hidden="true">→</span></a>
-            <p class="code mono">Código de invitación: <b id="code">BOTELLA-01</b></p>
+            <a class="btn btn-a btn-full" id="open" href="https://botella-app.vercel.app/?c=BOTELLA-01">Abrir Botella</a>
+            <p class="code">Código de invitación: <b id="code">BOTELLA-01</b></p>
             <ol class="tips">
               <li>Ábrela en tu celular, en Safari o Chrome.</li>
               <li>Crea tu cuenta con correo y contraseña. El código ya va puesto.</li>
@@ -186,7 +190,7 @@
           </div>
           <div class="share">
             <p>¿A quién le mandarías una botella?</p>
-            <a class="btn btn-line btn-full" id="wa" href="#" target="_blank" rel="noopener"><span>Invitar por WhatsApp</span><span aria-hidden="true">↗</span></a>
+            <a class="btn btn-2 btn-full" id="wa" href="#" target="_blank" rel="noopener">Invitar por WhatsApp</a>
           </div>
         </div>
       </div>
@@ -196,7 +200,7 @@
   <!-- Preguntas -->
   <section class="sec faq" aria-labelledby="h-faq">
     <div class="wrap">
-      <h2 id="h-faq" class="d-lg">Preguntas.</h2>
+      <h2 id="h-faq" class="d-lg">Preguntas</h2>
       <details><summary>¿Cuesta algo?</summary><p>No. Mientras armamos Botella con los primeros 100 de Lima, todo es gratis.</p></details>
       <details><summary>¿Tengo que descargar algo?</summary><p>No. Botella se abre en el navegador de tu celular. Si quieres, la agregas a tu pantalla de inicio y queda como una app.</p></details>
       <details><summary>¿Alguien va a ver mi cara?</summary><p>Al principio no: te conocen por tu voz y por lo que te gusta. Tu foto y tu nombre se muestran solo si los dos ponen su llave, después de haber conversado.</p></details>
@@ -205,13 +209,12 @@
     </div>
   </section>
 
-  <!-- Carta nocturna: por qué existe -->
-  <section class="night" id="por-que" aria-labelledby="h-why">
-    <svg class="stars" id="stars" viewBox="0 0 400 260" aria-hidden="true"></svg>
-    <div class="wrap">
-      <p class="mono night-k">Carta nocturna</p>
+  <!-- Por qué -->
+  <section class="sec why" id="por-que" aria-labelledby="h-why">
+    <svg class="sky sky-low" id="sky2" aria-hidden="true"></svg>
+    <div class="wrap why-in">
       <h2 id="h-why" class="d-lg">Si tantos se sienten solos, nadie está tan solo como cree.</h2>
-      <div class="why">
+      <div class="why-grid">
         <figure class="stat">
           <p class="stat-n">1<small>de cada</small>6</p>
           <figcaption>personas en el mundo se siente sola. <a href="https://www.who.int/es/news-room/30-06-2025-social-connection-linked-to-improved-heath-and-reduced-risk-of-early-death" target="_blank" rel="noopener">OMS, 2025</a></figcaption>
@@ -220,7 +223,7 @@
           <p>Tenemos más contactos que nunca y menos conversaciones de verdad. Creemos que eso se arregla con algo muy simple: escuchar a alguien.</p>
           <p>Una voz dice más que mil fotos. Por eso en Botella todo empieza hablando, y vales por lo que dices y por cómo lo cuentas, no por cómo te ves.</p>
           <p class="big">Queremos que en Lima vuelva a ser normal conversar con alguien nuevo.</p>
-          <a class="btn btn-paper" href="#entrar"><span>Lanza la primera</span><span aria-hidden="true">→</span></a>
+          <a class="btn btn-a" href="#entrar">Lanza la primera</a>
         </div>
       </div>
     </div>
@@ -229,12 +232,9 @@
 </main>
 
 <footer class="foot">
-  <div class="wrap">
-    <p class="foot-wm" aria-hidden="true">Botella</p>
-    <div class="foot-row mono">
-      <span>Hecho en Lima, 2026 · 12°07′S 77°02′W</span>
-      <span>Botella no es un servicio de ayuda profesional. Si estás pasando por un momento difícil, llama gratis a la Línea 113, opción 5.</span>
-    </div>
+  <div class="wrap foot-in">
+    <span class="wm">botella</span>
+    <p>Hecho en Lima, 2026. Botella no es un servicio de ayuda profesional. Si estás pasando por un momento difícil, llama gratis a la Línea 113, opción 5.</p>
   </div>
 </footer>
 

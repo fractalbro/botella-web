@@ -1,16 +1,12 @@
-/* Botella · Carta náutica. Sin librerías.
-   Todo lo que se mueve con el scroll pasa por un solo bucle y solo cuando está en pantalla.
-   Con "reducir movimiento" cada cosa aparece ya en su estado final. */
+/* Botella · web. Sin librerías. Mismo mundo que la app: la noche, la botella que brilla, la voz.
+   Un solo bucle de scroll que solo trabaja cuando hace falta. Con "reducir movimiento" todo
+   aparece ya en su estado final. */
 (() => {
   const CFG = window.BOTELLA || {};
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
-  const NS = 'http://www.w3.org/2000/svg';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-  const seg = (p, a, b) => clamp((p - a) / (b - a));
-  const ease = t => 1 - Math.pow(1 - t, 3);
   const store = { get(k) { try { return JSON.parse(localStorage.getItem('botella-web-' + k)); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem('botella-web-' + k, JSON.stringify(v)); } catch (e) {} } };
-  const el = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
   document.documentElement.classList.add('js');
 
   const qs = new URLSearchParams(location.search);
@@ -18,318 +14,183 @@
   if (ref) store.set('ref', ref);
   const source = (qs.get('utm_source') || qs.get('src') || (document.referrer ? new URL(document.referrer).hostname : '') || '').slice(0, 40);
 
-  /* ---------- la costa (compartida por la portada y la bitácora) ---------- */
-  const coast = (w, y0, amp) => { let d = `M-20 -20 L${w + 20} -20 L${w + 20} ${y0}`; for (let x = w + 20; x >= -20; x -= 20) { const y = y0 + Math.sin(x * .021) * amp + Math.sin(x * .057 + 1) * amp * .45; d += ` L${x} ${y.toFixed(1)}`; } return d + ' Z'; };
-  const contour = (w, y0, amp, ph) => { let d = ''; for (let x = -20; x <= w + 20; x += 10) { const y = y0 + Math.sin(x * .021 + ph) * amp + Math.sin(x * .057 + 1 + ph) * amp * .45; d += (x === -20 ? 'M' : 'L') + x + ' ' + y.toFixed(1) + ' '; } return d; };
-  const soundings = (g, list) => list.forEach(([x, y, n]) => { const t = el('text', { x, y, 'font-family': 'Familjen Grotesk', 'font-style': 'italic', 'font-size': 10, fill: '#33475A' }, g); t.textContent = n; });
+  /* ---------- iconos: un solo trazo, como en la app ---------- */
+  const IC = {
+    play: '<svg class="fill" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>',
+    pause: '<svg class="fill" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>',
+    mic: '<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>',
+    key: '<svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/></svg>',
+    tide: '<svg viewBox="0 0 24 24"><path d="M2 9q2.5-3 5 0t5 0 5 0 5 0M2 15q2.5-3 5 0t5 0 5 0 5 0"/></svg>',
+    plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+    seal: '<svg viewBox="0 0 24 24"><path d="M12 3l2.2 1.6 2.7-.1.9 2.6 2.2 1.6-.8 2.6.8 2.6-2.2 1.6-.9 2.6-2.7-.1L12 21l-2.2-1.6-2.7.1-.9-2.6-2.2-1.6.8-2.6-.8-2.6 2.2-1.6.9-2.6 2.7.1z"/><path d="M9 12l2 2 4-4"/></svg>',
+    pin: '<svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-12a7 7 0 00-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+    lock: '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>',
+    adult: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 9.5l1.5-1V16M14.5 12.2a1.9 1.9 0 110-3.7 1.9 1.9 0 010 3.7zm0 0a2 2 0 110 3.8 2 2 0 010-3.8z"/></svg>',
+    flag: '<svg viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>'
+  };
+  const ico = (n) => IC[n] || '';
+  const paintIcons = (root = document) => root.querySelectorAll('[data-ico]').forEach(n => { if (!n.firstChild) n.innerHTML = ico(n.dataset.ico); });
+  paintIcons();
 
-  /* ---------- portada ---------- */
-  const hm = $('#hero-map');
-  if (hm) {
-    const W = 400;
-    const g = el('g', {}, hm);
-    [0, 1, 2, 3, 4].forEach(i => el('path', { d: contour(W, 80 + i * 40, 9 - i, i * .6), fill: 'none', stroke: '#0C1A29', 'stroke-width': .7, opacity: .5 - i * .08 }, g));
-    el('path', { d: coast(W, 53, 12), fill: '#B9CC9B' }, g);
-    el('path', { d: contour(W, 53, 12, .15), fill: 'none', stroke: '#0C1A29', 'stroke-width': .5, 'stroke-dasharray': '1 2' }, g);
-    el('path', { d: coast(W, 46, 12), fill: '#EFD898' }, g);
-    el('path', { d: contour(W, 46, 12, 0), fill: 'none', stroke: '#0C1A29', 'stroke-width': 1.3 }, g);
-    // rosa de los vientos, como en las cartas del Callao
-    const ro = el('g', { transform: 'translate(338 120)', class: 'rose' }, g);
-    el('circle', { r: 40, fill: 'none', stroke: '#AE1767', 'stroke-width': .8 }, ro);
-    el('circle', { r: 31, fill: 'none', stroke: '#AE1767', 'stroke-width': .5 }, ro);
-    for (let a = 0; a < 360; a += 5) { const r1 = a % 30 === 0 ? 33 : a % 10 === 0 ? 36 : 38, rad = a * Math.PI / 180; el('line', { x1: (Math.sin(rad) * r1).toFixed(2), y1: (-Math.cos(rad) * r1).toFixed(2), x2: (Math.sin(rad) * 40).toFixed(2), y2: (-Math.cos(rad) * 40).toFixed(2), stroke: '#AE1767', 'stroke-width': a % 30 === 0 ? .9 : .5 }, ro); }
-    el('path', { d: 'M0 -28 L4 0 L0 28 L-4 0 Z M-28 0 L0 -4 L28 0 L0 4 Z', fill: 'none', stroke: '#AE1767', 'stroke-width': .8 }, ro);
-    el('path', { d: 'M0 -28 L4 0 L0 0 Z M28 0 L0 4 L0 0 Z M0 28 L-4 0 L0 0 Z M-28 0 L0 -4 L0 0 Z', fill: '#AE1767' }, ro);
-    const nN = el('text', { x: 0, y: -45, 'text-anchor': 'middle', 'font-family': 'IBM Plex Mono', 'font-size': 9, fill: '#AE1767' }, ro); nN.textContent = 'N';
-    const vr = el('text', { x: 0, y: 52, 'text-anchor': 'middle', 'font-family': 'IBM Plex Mono', 'font-size': 5.5, fill: '#AE1767', 'letter-spacing': '.04em' }, ro); vr.textContent = 'VAR 2°W 2026';
-    soundings(g, [[34, 104, 12], [118, 128, 18], [270, 132, 23], [214, 214, 31], [64, 236, 27], [344, 232, 40], [150, 286, 46]]);
-    const lbl = el('text', { x: 262, y: 26, 'font-family': 'IBM Plex Mono', 'font-size': 9, 'letter-spacing': '.08em', fill: '#33475A' }, g); lbl.textContent = 'COSTA VERDE';
-    const you = [214, 56];
-    el('rect', { x: you[0] - 4, y: you[1] - 4, width: 8, height: 8, fill: '#0C1A29' }, g);
-    const ty = el('text', { x: you[0] + 10, y: you[1] + 3, 'font-family': 'IBM Plex Mono', 'font-size': 9, fill: '#0C1A29' }, g); ty.textContent = 'TÚ';
-    const marks = [[150, 236], [58, 172], [96, 270], [236, 276], [292, 186], [346, 256], [30, 252], [206, 176]];
-    const hub = [172, 146];
-    const r = el('path', { class: 'route', d: `M${you[0]} ${you[1]} C 226 100, 150 110, ${hub[0]} ${hub[1]}`, fill: 'none', stroke: '#AE1767', 'stroke-width': 1.4 }, g);
-    const len = r.getTotalLength(); r.style.setProperty('--len', len);
-    marks.forEach(([x, y], i) => {
-      const l = el('path', { class: 'route', d: `M${hub[0]} ${hub[1]} L${x} ${y}`, fill: 'none', stroke: '#AE1767', 'stroke-width': .8, 'stroke-dasharray': '2 3', opacity: .7 }, g);
-      const L = Math.hypot(x - hub[0], y - hub[1]); l.style.setProperty('--len', L); l.style.animationDelay = (1.6 + i * .09) + 's';
-      const m = el('g', { class: 'mark' }, g); m.style.animationDelay = (2 + i * .09) + 's';
-      el('circle', { cx: x, cy: y, r: 5, fill: '#9DCBE0', stroke: '#AE1767', 'stroke-width': 1.4 }, m);
-      const t = el('text', { x: x + 9, y: y + 3, 'font-family': 'IBM Plex Mono', 'font-size': 9, fill: '#AE1767' }, m); t.textContent = '0' + (i + 1);
-    });
-    const b = el('g', { transform: `translate(${hub[0]} ${hub[1]})` }, g);
-    const bi = el('g', { class: 'bob' }, b);
-    el('rect', { x: -12, y: -4, width: 22, height: 8, rx: 3, fill: '#FBFAF5', stroke: '#0C1A29', 'stroke-width': 1.2 }, bi);
-    el('rect', { x: -8, y: -1.6, width: 12, height: 3.2, rx: 1, fill: '#EFD898' }, bi);
-    el('rect', { x: 10, y: -2.4, width: 4.5, height: 4.8, fill: '#0C1A29' }, bi);
-  }
+  /* ---------- la noche de la app: cielo, luna, mar ---------- */
+  const sea = (svg, o = {}) => {
+    if (!svg) return;
+    const r0 = svg.getBoundingClientRect(); const W = Math.max(320, Math.round(r0.width)), H = Math.max(400, Math.round(r0.height));
+    const hz = o.hz ?? (W > H ? .5 : .4), y0 = H * hz, id = svg.id;
+    let s = 11; const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('preserveAspectRatio', 'none');
+    let h = `<defs><linearGradient id="${id}-s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#020B15"/><stop offset="${hz}" stop-color="#0A2238"/><stop offset="1" stop-color="#03101C"/></linearGradient><radialGradient id="${id}-m"><stop offset="0" stop-color="#EAF6F2" stop-opacity=".2"/><stop offset="1" stop-color="#EAF6F2" stop-opacity="0"/></radialGradient></defs><rect width="${W}" height="${H}" fill="url(#${id}-s)"/>`;
+    const stars = Math.round(W * y0 / 2600);
+    for (let i = 0; i < stars; i++) h += `<circle cx="${(rnd() * W).toFixed(1)}" cy="${(rnd() * y0 * .95).toFixed(1)}" r="${(rnd() * .9 + .3).toFixed(2)}" fill="#fff" opacity="${(rnd() * .6 + .2).toFixed(2)}"/>`;
+    const mx = W * (o.mx ?? .78), my = o.myf ? H * o.myf : Math.min(y0 * .45, 170), mr = o.mr ?? (W > 900 ? 34 : 24);
+    h += `<circle cx="${mx}" cy="${my}" r="${mr * 6}" fill="url(#${id}-m)"/><circle cx="${mx}" cy="${my}" r="${mr}" fill="#EAF6F2"/>`;
+    h += `<g class="glint">`; for (let i = 0; i < 10; i++) { const yy = y0 + 6 + i * i * 4.5; const w = 40 - i * 2.5 + rnd() * 20; h += `<rect x="${(mx - w / 2 + (rnd() - .5) * 14).toFixed(0)}" y="${yy.toFixed(0)}" width="${w.toFixed(0)}" height="1.4" fill="#EAF6F2" opacity="${(.5 - i * .045).toFixed(2)}"/>`; } h += `</g>`;
+    h += `<rect y="${y0}" width="${W}" height="1" fill="#2A4A63" opacity=".8"/>`;
+    const waves = Math.round(W * (H - y0) / 5000);
+    for (let i = 0; i < waves; i++) { const y = y0 + 6 + rnd() * (H - y0); const w = 8 + rnd() * 34; h += `<rect x="${(rnd() * W).toFixed(0)}" y="${y.toFixed(0)}" width="${w.toFixed(0)}" height="1" fill="#8FB7CF" opacity="${(.08 + rnd() * .18).toFixed(2)}"/>`; }
+    svg.innerHTML = h;
+  };
+  const skies = () => { sea($('#sky')); sea($('#sky2'), { hz: .7, mx: .86, myf: .56, mr: 18 }); };
+  skies();
+  let rs = 0; addEventListener('resize', () => { clearTimeout(rs); rs = setTimeout(skies, 150); });
 
-  /* ---------- tinta que se asienta al entrar ---------- */
-  const inkSel = '.sec-head .d-lg, .sec-note, .find, .key, .calm-grid > div, .faq details, .off-yes, .night .d-lg, .stat, .prose > *, .ticket-head > *';
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px', threshold: .1 });
-  const watchInk = () => $$(inkSel).forEach(n => { if (!n.classList.contains('ink')) { n.classList.add('ink'); io.observe(n); } });
+  const BOTTLE = '<svg viewBox="0 0 120 40" aria-hidden="true" style="filter:drop-shadow(0 0 18px rgba(127,216,201,.55)) drop-shadow(0 0 4px rgba(255,236,190,.5))"><path d="M16 6h56q14 0 18 8h18v12H90q-4 8-18 8H16q-10 0-10-14T16 6z" fill="rgba(127,216,201,.2)" stroke="rgba(170,240,228,.9)" stroke-width="2.5"/><rect x="22" y="14" width="48" height="12" rx="5" fill="#F6E7C4"/><rect x="108" y="15" width="8" height="10" fill="#8A5A33"/></svg>';
+  $('#hero-bottle').innerHTML = BOTTLE;
 
-  /* ---------- botellas encontradas ---------- */
+  /* ---------- voces de ejemplo ---------- */
   const V = [
-    { id: 'majo', n: '014', kind: 'Pregunta', topic: 'la música', secs: 14, q: '¿Qué harías un domingo si nadie en esta ciudad te conociera?', pk: [1, .48, .77, .57, .82, .74, .67, .41, .35, .91, .76, .58, .92, .51, .68, .28, .88, .57, .71, .74, .53, .33, .89, .5, .38, .86, 1, .48] },
-    { id: 'leo', n: '022', kind: 'Confesión', topic: 'el cine', secs: 13, q: 'Me mudé a Lima hace tres meses y todavía no tengo con quién ir al cine.', pk: [.67, .42, .32, .41, 1, .48, .49, .29, .59, .6, .53, .39, .4, .16, .6, .49, .4, .39, .44, .41, .67, .55, .61, .52, .4, .3, .42, .18] },
-    { id: 'rocio', n: '031', kind: 'Historia', topic: 'la comida', secs: 15, q: 'Lo más raro que me pasó en una combi.', pk: [.64, .72, .92, .62, .74, .42, .74, .72, .95, .51, .6, .86, .52, .65, .73, .75, .7, .57, .73, .79, .82, .84, 1, .54, .91, .79, .61, .62] },
-    { id: 'diego', n: '047', kind: 'Confesión', topic: 'la tecnología', secs: 12, q: 'Trabajo desde casa y a veces paso días sin hablar con nadie.', pk: [1, .87, .93, .83, .7, .85, .7, .58, .68, .7, .63, .52, .25, .92, .64, .64, .57, .36, .26, .77, .73, .7, .61, .42, .89, .84, .57, .36] }
+    { id: 'majo', kind: 'Pregunta', topic: 'la música', chip: 'Música', c: '#FFC24B', secs: 14, q: '¿Qué harías un domingo si nadie en esta ciudad te conociera?', pk: [1, .48, .77, .57, .82, .74, .67, .41, .35, .91, .76, .58, .92, .51, .68, .28, .88, .57, .71, .74, .53, .33, .89, .5, .38, .86, 1, .48] },
+    { id: 'leo', kind: 'Confesión', topic: 'el cine', chip: 'Cine', c: '#8E8CFF', secs: 13, q: 'Me mudé a Lima hace tres meses y todavía no tengo con quién ir al cine.', pk: [.67, .42, .32, .41, 1, .48, .49, .29, .59, .6, .53, .39, .4, .16, .6, .49, .4, .39, .44, .41, .67, .55, .61, .52, .4, .3, .42, .18] },
+    { id: 'rocio', kind: 'Historia', topic: 'la comida', chip: 'Comida', c: '#FF70A9', secs: 15, q: 'Lo más raro que me pasó en una combi.', pk: [.64, .72, .92, .62, .74, .42, .74, .72, .95, .51, .6, .86, .52, .65, .73, .75, .7, .57, .73, .79, .82, .84, 1, .54, .91, .79, .61, .62] },
+    { id: 'diego', kind: 'Confesión', topic: 'la tecnología', chip: 'Tecnología', c: '#9FE3B0', secs: 12, q: 'Trabajo desde casa y a veces paso días sin hablar con nadie.', pk: [1, .87, .93, .83, .7, .85, .7, .58, .68, .7, .63, .52, .25, .92, .64, .64, .57, .36, .26, .77, .73, .7, .61, .42, .89, .84, .57, .36] }
   ];
-  const fmt = s => `0:${String(Math.round(s)).padStart(2, '0')}`;
-  const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>';
-  const PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>';
-  $('#finds').innerHTML = V.map(v => `<li class="find" data-v="${v.id}"><button type="button" aria-label="Escuchar: ${v.q}. ${v.kind} de alguien que ama ${v.topic}">
-    <span class="play">${PLAY}</span>
-    <span><span class="meta mono"><span>N.º ${v.n} · ${v.kind}</span><b>Ama ${v.topic}</b></span>
-    <span class="q">${v.q}</span>
-    <span class="bars">${v.pk.map(p => `<i style="--h:${Math.max(.15, p).toFixed(2)};height:100%"></i>`).join('')}<span class="t mono">${fmt(v.secs)}</span></span></span>
-  </button></li>`).join('');
-  const au = $('#au'); let cur = null;
-  const row = id => $(`.find[data-v="${id}"]`);
-  const heroBtn = $('[data-play]');
-  const paint = () => {
-    if (!cur) return;
-    const v = V.find(x => x.id === cur), r = row(cur), p = au.duration ? au.currentTime / au.duration : 0;
-    r.querySelectorAll('.bars i').forEach((b, i) => b.classList.toggle('p', i / v.pk.length < p));
-    r.querySelector('.t').textContent = fmt(au.duration ? au.duration - au.currentTime : v.secs);
+  const fmt = s => `0:${String(Math.max(0, Math.round(s))).padStart(2, '0')}`;
+  const bars = (pk) => pk.map(p => `<i style="--h:${Math.round(Math.max(.18, p) * 100)}%"></i>`).join('');
+  const seedBars = (seed, n = 26) => { let r = seed; const a = []; for (let i = 0; i < n; i++) { r = (r * 9301 + 49297) % 233280; a.push(.25 + r / 233280 * .75); } return a; };
+  $$('.chat .wv').forEach(w => w.innerHTML = bars(seedBars(+w.dataset.seed)));
+
+  let sel = 0;
+  const topics = $('#topics'), paper = $('#paper');
+  topics.innerHTML = V.map((v, i) => `<button class="chip" role="tab" type="button" aria-selected="${i === 0}" data-i="${i}"><span class="dot" style="--c:${v.c}"></span>${v.chip}</button>`).join('');
+  const showPaper = (i, animate) => {
+    sel = i; const v = V[i];
+    $('#paper-m').textContent = `${v.kind} de alguien que ama ${v.topic}`;
+    $('#paper-q').textContent = v.q;
+    $('#paper-wv').innerHTML = bars(v.pk);
+    $('#paper-t').textContent = fmt(v.secs);
+    $('#player').setAttribute('aria-label', `Escuchar: ${v.q}`);
+    topics.querySelectorAll('.chip').forEach((c, k) => c.setAttribute('aria-selected', k === i));
+    if (animate && !reduce) { paper.classList.remove('swap'); void paper.offsetWidth; paper.classList.add('swap'); }
+  };
+  showPaper(0);
+  topics.addEventListener('click', e => { const c = e.target.closest('.chip'); if (!c) return; if (cur) stop(); showPaper(+c.dataset.i, true); });
+
+  /* ---------- un solo reproductor para toda la página ---------- */
+  const au = $('#au'); let cur = null, from = null; // from: 'paper' | 'hero' | 'ring'
+  const heroBtn = $('.hero [data-play]'), ringBtn = $('.ring-play');
+  let actx = null, an = null, freq = null;
+  const analyser = () => {
+    if (an || !window.AudioContext) return;
+    try { actx = new AudioContext(); const src = actx.createMediaElementSource(au); an = actx.createAnalyser(); an.fftSize = 256; src.connect(an); an.connect(actx.destination); freq = new Uint8Array(an.frequencyBinCount); } catch (e) { an = null; }
+  };
+  const setIcon = (n, name) => { if (n) n.innerHTML = ico(name); };
+  const paintPaper = () => {
+    if (from !== 'paper') return;
+    const v = V[sel], p = au.duration ? au.currentTime / au.duration : 0;
+    $$('#paper-wv i').forEach((b, i) => b.classList.toggle('p', i / v.pk.length < p));
+    $('#paper-t').textContent = fmt(au.duration ? au.duration - au.currentTime : v.secs);
   };
   const stop = () => {
-    if (!cur) return;
-    const r = row(cur); r.classList.remove('on'); r.querySelector('.play').innerHTML = PLAY;
-    r.querySelectorAll('.bars i').forEach(b => b.classList.remove('p'));
-    r.querySelector('.t').textContent = fmt(V.find(x => x.id === cur).secs);
-    if (cur === heroBtn.dataset.play) { heroBtn.classList.remove('on'); heroBtn.querySelector('.listen-t').textContent = 'Escuchar una botella'; }
-    cur = null;
+    au.pause();
+    setIcon($('#player .ico'), 'play'); $$('#paper-wv i').forEach(b => b.classList.remove('p')); $('#paper-t').textContent = fmt(V[sel].secs);
+    setIcon(heroBtn.querySelector('.ico'), 'play'); heroBtn.classList.remove('on'); heroBtn.querySelector('.listen-t').textContent = 'Escuchar una botella';
+    setIcon(ringBtn.querySelector('.ico'), 'play'); ringBtn.setAttribute('aria-label', 'Escuchar una voz de verdad'); $('#ring-cap').textContent = 'Escucha una botella de verdad · 0:13';
+    cur = null; from = null; kick();
   };
-  const play = id => {
-    if (cur === id && !au.paused) { au.pause(); stop(); return; }
-    stop(); cur = id; au.src = `/v/${id}-say.mp3`; au.currentTime = 0;
+  const play = (id, src) => {
+    if (cur === id && from === src && !au.paused) return stop();
+    if (cur) stop();
+    analyser(); if (actx && actx.state === 'suspended') actx.resume();
+    cur = id; from = src; au.src = `/v/${id}-say.mp3`; au.currentTime = 0;
     au.play().catch(() => stop());
-    const r = row(id); r.classList.add('on'); r.querySelector('.play').innerHTML = PAUSE;
-    if (id === heroBtn.dataset.play) { heroBtn.classList.add('on'); heroBtn.querySelector('.listen-t').textContent = 'Escuchando…'; }
+    if (src === 'paper') setIcon($('#player .ico'), 'pause');
+    if (src === 'hero') { setIcon(heroBtn.querySelector('.ico'), 'pause'); heroBtn.classList.add('on'); heroBtn.querySelector('.listen-t').textContent = 'Escuchando…'; }
+    if (src === 'ring') { setIcon(ringBtn.querySelector('.ico'), 'pause'); ringBtn.setAttribute('aria-label', 'Pausar'); }
+    kick();
   };
-  au.addEventListener('timeupdate', paint);
+  au.addEventListener('timeupdate', () => { paintPaper(); if (from === 'ring') $('#ring-cap').textContent = `Escuchando · ${fmt(au.duration ? au.duration - au.currentTime : 13)}`; });
   au.addEventListener('ended', stop);
-  document.addEventListener('click', e => {
-    const f = e.target.closest('.find'); if (f) return play(f.dataset.v);
-    const h = e.target.closest('[data-play]'); if (h) return play(h.dataset.play);
+  $('#player').addEventListener('click', () => play(V[sel].id, 'paper'));
+  heroBtn.addEventListener('click', () => play('majo', 'hero'));
+  ringBtn.addEventListener('click', () => play('leo', 'ring'));
+
+  /* ---------- anillo de voz ---------- */
+  const ring = $('#ring'), N = 72, R0 = 78;
+  const base = seedBars(17, N).map(v => 14 + v * 52);
+  const lines = base.map((L, i) => {
+    const a = i / N * Math.PI * 2, l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    l.setAttribute('x1', (Math.sin(a) * R0).toFixed(1)); l.setAttribute('y1', (-Math.cos(a) * R0).toFixed(1));
+    l.dataset.a = a; ring.appendChild(l); return l;
   });
-  watchInk();
-
-  /* ---------- bitácora: el viaje de una botella, ligado al scroll ---------- */
-  const log = $('.log'), lm = $('#log-map');
-  const entries = $$('#entries li');
-  const T = [0, .1, .2, .36, .5, .62, .74, .86, 1];
-  const TIMES = ['21:04', '21:05', '21:05', '03:05', '08:12', '08:15', '08:40', '22:10'];
-  let renderLog = () => {};
-  if (log && lm && !reduce) {
-    document.documentElement.classList.add('pinned');
-    const W = 400;
-    const g = el('g', {}, lm);
-    [0, 1, 2, 3].forEach(i => el('path', { d: contour(W, 80 + i * 44, 8 - i, i * .7), fill: 'none', stroke: '#0C1A29', 'stroke-width': .6, opacity: .4 - i * .07 }, g));
-    el('path', { d: coast(W, 50, 9), fill: '#B9CC9B' }, g);
-    el('path', { d: coast(W, 44, 9), fill: '#EFD898' }, g);
-    el('path', { d: contour(W, 44, 9, 0), fill: 'none', stroke: '#0C1A29', 'stroke-width': 1.2 }, g);
-    soundings(g, [[30, 100, 12], [350, 96, 15], [240, 140, 22], [60, 250, 30], [360, 220, 38]]);
-    const you = [206, 52], hub = [196, 150];
-    const M8 = [[110, 108], [60, 160], [300, 104], [350, 160], [96, 222], [178, 238], [262, 210], [326, 246]];
-    const M4 = [[30, 286], [140, 290], [262, 292], [376, 286]];
-    const THEM = 4;
-    const lineTo = (a, b, attrs) => { const l = el('path', Object.assign({ d: `M${a[0]} ${a[1]} L${b[0]} ${b[1]}`, fill: 'none' }, attrs), g); const L = Math.hypot(b[0] - a[0], b[1] - a[1]); l.setAttribute('stroke-dasharray', `${L} ${L}`); l.setAttribute('stroke-dashoffset', L); return [l, L]; };
-    const launch = el('path', { d: `M${you[0]} ${you[1]} C 214 92, 170 104, ${hub[0]} ${hub[1]}`, fill: 'none', stroke: '#AE1767', 'stroke-width': 1.5 }, g);
-    const LL = launch.getTotalLength(); launch.setAttribute('stroke-dasharray', `${LL} ${LL}`); launch.setAttribute('stroke-dashoffset', LL);
-    const spokes = M8.map(m => lineTo(hub, m, { stroke: '#AE1767', 'stroke-width': .8, opacity: .65 }));
-    const spokes4 = M4.map(m => lineTo(hub, m, { stroke: '#AE1767', 'stroke-width': .8, opacity: .45 }));
-    const mark = (x, y, label, dashed) => {
-      const m = el('g', { opacity: 0 }, g);
-      const c = el('circle', { cx: x, cy: y, r: 7, fill: '#C9E2EE', stroke: '#AE1767', 'stroke-width': 1.4, 'stroke-dasharray': dashed ? '2 2' : 'none' }, m);
-      const t = el('text', { x: x + 10, y: y + 3, 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#AE1767' }, m); t.textContent = label;
-      return { m, c, t, x, y };
-    };
-    const m8 = M8.map(([x, y], i) => mark(x, y, '0' + (i + 1)));
-    const m4 = M4.map(([x, y], i) => mark(x, y, String(9 + i).padStart(2, '0'), true));
-    // tú
-    el('rect', { x: you[0] - 4.5, y: you[1] - 4.5, width: 9, height: 9, fill: '#0C1A29' }, g);
-    const youT = el('text', { x: you[0] + 11, y: you[1] + 3, 'font-family': 'IBM Plex Mono', 'font-size': 12, fill: '#0C1A29' }, g); youT.textContent = 'TÚ';
-    // ondas de grabación
-    const rings = [0, 1, 2].map(() => el('circle', { cx: you[0], cy: you[1], r: 6, fill: 'none', stroke: '#AE1767', 'stroke-width': 1, opacity: 0 }, g));
-    // botella
-    const bottle = el('g', { opacity: 0 }, g);
-    el('rect', { x: -11, y: -4, width: 20, height: 8, rx: 3, fill: '#FBFAF5', stroke: '#0C1A29', 'stroke-width': 1.2 }, bottle);
-    el('rect', { x: 9, y: -2.4, width: 4.5, height: 4.8, fill: '#0C1A29' }, bottle);
-    // marea
-    const tide = el('g', { opacity: 0 }, g);
-    [0, 1].forEach(i => el('path', { d: `M${hub[0] - 26} ${hub[1] + 18 + i * 7} q6.5 -5 13 0 t13 0 t13 0 t13 0`, fill: 'none', stroke: '#0C1A29', 'stroke-width': 1 }, tide));
-    const tideT = el('text', { x: hub[0] + 32, y: hub[1] + 26, 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#0C1A29' }, tide); tideT.textContent = '+6 H';
-    // respuesta
-    const them = m8[THEM];
-    const reply = el('path', { d: `M${them.x} ${them.y} C 120 140, 180 70, ${you[0]} ${you[1]}`, fill: 'none', stroke: '#0C1A29', 'stroke-width': 1.6 }, g);
-    const RL = reply.getTotalLength(); reply.setAttribute('stroke-dasharray', `${RL} ${RL}`); reply.setAttribute('stroke-dashoffset', RL);
-    const pulses = [0, 1, 2].map(() => el('circle', { r: 3, fill: '#AE1767', opacity: 0 }, g));
-    const chip = el('g', { opacity: 0 }, g);
-    el('rect', { x: 80, y: 110, width: 184, height: 22, fill: '#0C1A29' }, chip);
-    const chipT = el('text', { x: 172, y: 124.5, 'text-anchor': 'middle', 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#FBFAF5', 'letter-spacing': '.06em' }, chip); chipT.textContent = 'TEMA EN COMÚN: EL CINE';
-    const themT = el('text', { x: them.x - 10, y: them.y + 22, 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#0C1A29', opacity: 0 }, g); themT.textContent = 'AMA EL CINE';
-    const key = (x, y) => { const k = el('g', { opacity: 0 }, g); el('circle', { cx: 0, cy: 0, r: 4, fill: 'none', stroke: '#AE1767', 'stroke-width': 1.5 }, k); el('path', { d: 'M4 0h9M10 0v4M13 0v3', stroke: '#AE1767', 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round' }, k); k.dataset.x = x; k.dataset.y = y; return k; };
-    const k1 = key(you[0] - 36, you[1] + 18), k2 = key(them.x - 34, them.y - 18);
-
-    let lastK = -1;
-    renderLog = p => {
-      // 1 grabar
-      const rec = seg(p, .01, T[1]);
-      rings.forEach((c, i) => { const t = Math.max(0, rec * 2.4 - i * .3) % 1; const on = rec > 0 && rec < 1 && rec * 2.4 > i * .3; c.setAttribute('r', (6 + t * 22).toFixed(1)); c.setAttribute('opacity', on ? (1 - t).toFixed(2) : 0); });
-      // 2 lanzar
-      const ln = ease(seg(p, T[1], T[2] - .01));
-      launch.setAttribute('stroke-dashoffset', (LL * (1 - ln)).toFixed(1));
-      const pt = launch.getPointAtLength(LL * ln);
-      bottle.setAttribute('opacity', p > T[1] && p < T[4] ? 1 : 0);
-      bottle.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) rotate(${(-30 + ln * 40).toFixed(0)})`);
-      // 3 ocho orillas
-      spokes.forEach(([l, L], i) => {
-        const t = ease(seg(p, T[2] + .005 + i * .012, T[2] + .05 + i * .012));
-        l.setAttribute('stroke-dashoffset', (L * (1 - t)).toFixed(1));
-        const on = t >= 1;
-        m8[i].m.setAttribute('opacity', on ? 1 : t > .6 ? .6 : 0);
-        const dim = i === THEM ? 0 : seg(p, T[4], T[4] + .03) * .55;
-        if (p >= T[4]) m8[i].m.setAttribute('opacity', (1 - dim).toFixed(2));
-      });
-      // 4 marea
-      tide.setAttribute('opacity', (seg(p, T[3], T[3] + .02) * (1 - seg(p, T[4] - .02, T[4]))).toFixed(2));
-      tideT.textContent = '+' + Math.max(1, Math.round(seg(p, T[3], T[3] + .05) * 6)) + ' H';
-      spokes4.forEach(([l, L], i) => {
-        const t = ease(seg(p, T[3] + .05 + i * .01, T[3] + .09 + i * .01));
-        l.setAttribute('stroke-dashoffset', (L * (1 - t)).toFixed(1));
-        m4[i].m.setAttribute('opacity', (t >= 1 ? 1 - seg(p, T[4], T[4] + .03) * .55 : 0).toFixed(2));
-      });
-      // 5 descorchada
-      const op = seg(p, T[4] + .01, T[4] + .05);
-      them.c.setAttribute('fill', op > .5 ? '#AE1767' : '#C9E2EE');
-      them.c.setAttribute('r', (7 + Math.sin(op * Math.PI) * 4).toFixed(1));
-      themT.setAttribute('opacity', seg(p, T[4] + .03, T[4] + .06).toFixed(2));
-      // 6 responde
-      const rp = ease(seg(p, T[5], T[6] - .02));
-      reply.setAttribute('stroke-dashoffset', (RL * (1 - rp)).toFixed(1));
-      // 7 conversan: pulsos que van y vienen
-      const tk = seg(p, T[6], T[7]);
-      pulses.forEach((c, i) => {
-        let t = clamp((p < T[6] ? rp * 1.4 : tk * 2.2) - i * .3); if (p >= T[6] && i === 1) t = 1 - t;
-        const on = (p >= T[5] + .01) && t > 0 && t < 1;
-        const q = reply.getPointAtLength(RL * (p < T[6] ? t * rp : t));
-        c.setAttribute('cx', q.x.toFixed(1)); c.setAttribute('cy', q.y.toFixed(1)); c.setAttribute('opacity', on ? 1 : 0);
-        c.setAttribute('fill', p >= T[6] && i === 1 ? '#0C1A29' : '#AE1767');
-      });
-      chip.setAttribute('opacity', seg(p, T[6] + .02, T[6] + .05).toFixed(2));
-      // 8 llaves y nombres
-      const a1 = seg(p, T[7] + .01, T[7] + .04), a2 = seg(p, T[7] + .05, T[7] + .08);
-      [[k1, a1], [k2, a2]].forEach(([k, a]) => { k.setAttribute('opacity', seg(p, T[7], T[7] + .01).toFixed(2)); k.setAttribute('transform', `translate(${k.dataset.x} ${k.dataset.y}) rotate(${(-90 + a * 90).toFixed(0)})`); });
-      const both = p >= T[7] + .09;
-      youT.textContent = both ? 'TÚ · MAJO' : 'TÚ';
-      themT.textContent = both ? 'LEO' : 'AMA EL CINE';
-      themT.setAttribute('fill', both ? '#AE1767' : '#0C1A29');
-      // texto
-      let k = 0; while (k < 7 && p >= T[k + 1]) k++;
-      if (k !== lastK) {
-        entries.forEach((li, i) => { const up = k - i; li.style.setProperty('--up', Math.max(0, up)); li.style.setProperty('--o', up < 0 ? 0 : up === 0 ? 1 : up === 1 ? .55 : up === 2 ? .25 : 0); li.classList.toggle('now', up === 0); li.setAttribute('aria-hidden', up === 0 ? 'false' : 'true'); });
-        $('#log-time').textContent = TIMES[k]; $('#log-step').textContent = (k + 1) + '/8';
-        lastK = k;
-      }
-    };
-    renderLog(0);
-  }
-
-
-  /* ---------- isobatas entre zonas y la derrota magenta ---------- */
-  const Z = { hero: '#9DCBE0', found: '#B5D8E8', log: '#C9E2EE', legend: '#DAEBF2', off: '#E8F2F5', deep: '#FBFAF5' };
-  const iso = (before, a, b, m, ph) => {
-    const d = document.createElement('div'); d.className = 'iso'; d.setAttribute('aria-hidden', 'true');
-    d.style.setProperty('--a', a); d.style.setProperty('--b', b);
-    let w = 'M0 15'; for (let x = 0; x <= 400; x += 10) w += ` L${x} ${(15 + Math.sin(x * .03 + ph) * 6 + Math.sin(x * .011 + ph * 2) * 4).toFixed(1)}`;
-    d.innerHTML = `<svg viewBox="0 0 400 30" preserveAspectRatio="none"><path class="f" d="${w} L400 30 L0 30 Z"/><path class="l" d="${w}"/></svg><span class="mono">${m} m</span>`;
-    before.parentNode.insertBefore(d, before); return d;
+  const setLen = (l, L) => { const a = +l.dataset.a; l.setAttribute('x2', (Math.sin(a) * (R0 + L)).toFixed(1)); l.setAttribute('y2', (-Math.cos(a) * (R0 + L)).toFixed(1)); };
+  lines.forEach((l, i) => setLen(l, base[i]));
+  let litShown = reduce ? N : 0;
+  const renderRing = (scrollP) => {
+    const playing = from === 'ring' && !au.paused;
+    let lit;
+    if (playing) { lit = Math.round((au.duration ? au.currentTime / au.duration : 0) * N); }
+    else lit = Math.round(scrollP * N);
+    if (an && playing) { an.getByteFrequencyData(freq); lines.forEach((l, i) => { const f = freq[(i * 3) % 90] / 255; setLen(l, base[i] * .55 + f * 58); }); }
+    else if (playing) { const t = performance.now() / 160; lines.forEach((l, i) => setLen(l, base[i] * (.7 + .3 * Math.sin(t + i * .7)))); }
+    if (lit !== litShown || playing) { lines.forEach((l, i) => l.classList.toggle('lit', i < lit)); litShown = lit; }
+    return playing;
   };
-  [['#voces', Z.hero, Z.found, 5], ['#como', Z.found, Z.log, 10], ['.legend', Z.log, Z.legend, 20], ['.off', Z.legend, Z.off, 30], ['.calm', Z.off, Z.deep, 50]]
-    .forEach(([sel, a, b, m], i) => { const n = $(sel); if (n) iso(n, a, b, m, i * 1.3); });
-  const main = $('main'), spine = document.createElement('div');
-  spine.className = 'spine'; spine.setAttribute('aria-hidden', 'true');
-  spine.innerHTML = '<i class="spine-g"></i><i class="spine-l"></i><svg class="spine-b" viewBox="-12 -5 27 10"><rect x="-11" y="-4" width="20" height="8" rx="3" fill="#FBFAF5" stroke="#0C1A29" stroke-width="1.2"/><rect x="9" y="-2.4" width="4.5" height="4.8" fill="#0C1A29"/></svg>';
-  main.appendChild(spine);
-  const WPS = [['#h-voces', '01'], ['#h-como', '02'], ['#h-leg', '03'], ['#h-off', '04'], ['#h-calm', '05'], ['#h-join', '06'], ['#h-faq', '07']];
-  const wps = WPS.map(([sel, n]) => { const w = document.createElement('b'); w.className = 'wp'; w.textContent = n; spine.appendChild(w); return [$(sel), w]; });
-  const endW = document.createElement('b'); endW.className = 'wp end'; endW.innerHTML = '<b>08</b>'; spine.appendChild(endW);
-  let spTop = 0, spH = 1;
-  const layoutSpine = () => {
-    const mt = main.getBoundingClientRect().top + scrollY;
-    const top = $('#voces').getBoundingClientRect().top + scrollY - mt;
-    const end = $('.night').getBoundingClientRect().top + scrollY - mt;
-    spTop = top + mt; spH = Math.max(1, end - top);
-    spine.style.top = top + 'px'; spine.style.height = spH + 'px';
-    wps.forEach(([h, w]) => { if (!h) return; const sec = h.closest('section'); const y = (sec.classList.contains('log') ? sec.getBoundingClientRect().top + scrollY + 96 : h.getBoundingClientRect().top + scrollY) - spTop; w.style.top = Math.max(0, y) + 'px'; w.dataset.y = y; w.style.setProperty('--zone', getComputedStyle(sec).getPropertyValue('--zone') || '#FBFAF5'); });
-    endW.style.top = (spH - 11) + 'px'; endW.dataset.y = spH;
-  };
-  layoutSpine();
-  document.fonts && document.fonts.ready.then(() => { layoutSpine(); kick(); });
-  addEventListener('resize', layoutSpine);
-  addEventListener('load', layoutSpine);
+  if (reduce) lines.forEach(l => l.classList.add('lit'));
 
-  /* ---------- fuera del mapa, estrellas y marea final ---------- */
-  const strikes = $$('.strike li');
-  const stars = $('#stars');
-  let starLines = [], starDots = [];
-  if (stars) {
-    const pts = [[60, 150], [130, 70], [215, 110], [300, 50], [350, 160], [250, 210]];
-    const pairs = [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [1, 2], [2, 3], [3, 4], [4, 5], [5, 2], [1, 3]];
-    starLines = pairs.map(([a, b]) => { const [x1, y1] = pts[a], [x2, y2] = pts[b], L = Math.hypot(x2 - x1, y2 - y1); const l = el('line', { x1, y1, x2, y2, 'stroke-dasharray': `${L} ${L}`, 'stroke-dashoffset': reduce ? 0 : L }, stars); return [l, L]; });
-    starDots = pts.map(([cx, cy], i) => el('circle', { cx, cy, r: i ? 2.6 : 4, class: i ? '' : 'one' }, stars));
-  }
-  const wm = $('.foot-wm');
-  const along = (n, from, to) => { const r = n.getBoundingClientRect(), H = innerHeight; return clamp((H * from - r.top) / (H * (from - to))); };
+  /* ---------- conversación ---------- */
+  const chat = $('#chat'), stages = $$('#stages li');
+  const chatIO = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return; chatIO.unobserve(e.target);
+    [...chat.children].forEach((n, i) => setTimeout(() => n.classList.add('in'), reduce ? 0 : i * 420));
+  }), { threshold: .35 });
+  chatIO.observe(chat);
+
+  /* ---------- 8 orillas y la marea ---------- */
+  const shore = $('#shore');
+  const C8 = ['#7FD8C9', '#FFC24B', '#8E8CFF', '#FF70A9', '#FFB061', '#9FE3B0', '#8E8CFF', '#FFC24B'];
+  let sh = '<span class="hz"></span>';
+  C8.forEach((c, i) => { const x = 4 + i * 12.4, y = 50 + Math.sin(i * 1.3) * 10; sh += `<span class="orb near" style="--c:${c};left:calc(${x}% - 14px);top:calc(${y}% - 14px);width:28px;height:28px;transition-delay:${i * 90}ms"></span>`; });
+  [12, 37, 63, 88].forEach((x, i) => { sh += `<span class="orb far" style="--c:#7FD8C9;left:calc(${x}% - 8px);top:calc(18% - 8px);width:16px;height:16px;transition-delay:${900 + i * 120}ms"></span>`; });
+  sh += `<span class="lbl" style="left:0;bottom:0">8 personas con tus gustos</span><span class="lbl" style="right:0;top:0">+4 si en 6 h nadie responde</span>`;
+  shore.innerHTML = sh;
+  const shoreIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { shore.querySelectorAll('.orb').forEach(o => o.classList.add('in')); shoreIO.disconnect(); } }), { threshold: .5 });
+  shoreIO.observe(shore);
+
+  /* ---------- entradas suaves ---------- */
+  const inkSel = '.sec .d-lg, .sec-p, .note, .open-card, .rit li, .calm-grid > div, .faq details, .off-yes, .stat, .prose > *, .sheet-head > *, .ring-wrap';
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: .08 });
+  $$(inkSel).forEach(n => { n.classList.add('ink'); io.observe(n); });
 
   /* ---------- un solo bucle de scroll ---------- */
-  const bar = $('#bar'), rule = $('#bar-rule'), sheet = $('#sheet'), night = $('.night'), foot = $('.foot');
-  const tape = $('.tape-track');
-  let lastY = scrollY, tapeX = 0, tapeV = 0, tapeW = 0, raf = 0, shown = 0;
+  const bar = $('#bar'), hero = $('.hero'), ringSec = $('.ring-sec'), chatSec = $('.chat-sec');
+  const strikes = $$('.strike li');
+  const along = (n, a, b) => { const r = n.getBoundingClientRect(), H = innerHeight; return clamp((H * a - r.top) / (H * (a - b))); };
   const near = n => { const r = n.getBoundingClientRect(); return r.bottom > -100 && r.top < innerHeight + 100; };
-  const sheets = [['#top', 'Hoja 01 · Lima'], ['#voces', 'Hoja 02 · Hallazgos'], ['#como', 'Hoja 03 · Bitácora'], ['.legend', 'Hoja 04 · Leyenda'], ['#entrar', 'Hoja 05 · Pase'], ['#por-que', 'Hoja 06 · Nocturna']].map(([s, t]) => [$(s), t]);
+  let lastY = scrollY, raf = 0;
   const frame = () => {
-    raf = 0;
-    const y = scrollY, max = document.documentElement.scrollHeight - innerHeight;
-    rule.style.setProperty('--p', max > 0 ? (y / max).toFixed(4) : 0);
-    bar.classList.toggle('hide', y > 400 && y > lastY + 4 && !(log && near(log) && log.getBoundingClientRect().top < 0 && log.getBoundingClientRect().bottom > innerHeight));
-    if (y < lastY - 4) bar.classList.remove('hide');
-    const dark = [night, foot].some(n => { const r = n.getBoundingClientRect(); return r.top < 50 && r.bottom > 50; });
-    bar.classList.toggle('dark', dark);
-    let s = sheets[0][1]; sheets.forEach(([n, t]) => { if (n && n.getBoundingClientRect().top < innerHeight * .4) s = t; }); if (sheet.textContent !== s) sheet.textContent = s;
-    // derrota
-    const sp = reduce ? 1 : clamp((y + innerHeight * .55 - spTop) / spH);
-    spine.style.setProperty('--sp', sp.toFixed(4));
-    const yy = sp * spH; wps.forEach(([, w]) => w.classList.toggle('on', +w.dataset.y <= yy + 1)); endW.classList.toggle('on', sp >= .999);
-    let zb = Z.hero; [['#voces', Z.found], ['#como', Z.log], ['.legend', Z.legend], ['.off', Z.off], ['.calm', Z.deep]].forEach(([q, c]) => { const n = $(q); if (n && n.getBoundingClientRect().top < 60) zb = c; });
-    bar.style.setProperty('--barbg', zb);
-    // cinta
-    tapeV += (y - lastY) * .3; lastY = y;
-    // bitácora
+    raf = 0; const y = scrollY;
+    bar.classList.toggle('solid', y > hero.offsetHeight - 80);
+    if (y > 500 && y > lastY + 4) bar.classList.add('hide'); else if (y < lastY - 4 || y < 500) bar.classList.remove('hide');
+    lastY = y;
     let again = false;
-    if (log && near(log)) {
-      const r = log.getBoundingClientRect(), span = log.offsetHeight - innerHeight;
-      const target = span > 0 ? clamp(-r.top / span) : 0;
-      shown += (target - shown) * .2; if (Math.abs(target - shown) < .0005) shown = target; else again = true;
-      renderLog(shown);
-    }
-    strikes.forEach(li => { if (near(li)) li.style.setProperty('--s', along(li, .82, .5).toFixed(3)); });
-    if (stars && near(stars)) { const p = along(stars, 1, .2) * starLines.length; starLines.forEach(([l, L], i) => l.setAttribute('stroke-dashoffset', (L * (1 - clamp(p - i * .8))).toFixed(1))); }
-    if (wm && near(wm)) wm.style.setProperty('--tide', (along(wm, 1, .55) * 70).toFixed(1) + '%');
-    if (Math.abs(tapeV) > .05) { tapeW = tapeW || tape.scrollWidth / 2; tapeV *= .9; tapeX = (tapeX - tapeV) % tapeW; if (tapeX > 0) tapeX -= tapeW; tape.style.setProperty('--tx', tapeX.toFixed(1) + 'px'); again = true; }
+    if (near(ringSec)) again = renderRing(reduce ? 1 : along($('.ring-wrap'), .95, .4)) || again;
+    if (!reduce && near(chatSec)) { const p = along(chatSec, .7, -.1); const k = Math.min(3, Math.floor(p * 4)); stages.forEach((s, i) => s.classList.toggle('on', i <= k)); }
+    if (!reduce) strikes.forEach(li => { if (near(li)) li.style.setProperty('--s', along(li, .85, .55).toFixed(3)); });
     if (again) raf = requestAnimationFrame(frame);
   };
   const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
-  if (reduce) {
-    strikes.forEach(li => li.style.setProperty('--s', 1));
-    if (wm) wm.style.setProperty('--tide', '70%');
-  } else {
-    strikes.forEach(li => li.style.setProperty('--s', 0));
-  }
+  strikes.forEach(li => li.style.setProperty('--s', reduce ? 1 : 0));
+  if (reduce) stages.forEach(s => s.classList.add('on'));
   addEventListener('scroll', kick, { passive: true });
   addEventListener('resize', kick);
   frame();
@@ -348,7 +209,7 @@
   adult.addEventListener('click', () => adult.setAttribute('aria-checked', adult.getAttribute('aria-checked') !== 'true'));
   const shareText = invite => `Te mando una botella 🌊 Es una app de Lima donde grabas una pregunta con tu voz y la escuchan ocho personas de tus mismos temas. Sin fotos. Entra aquí: ${location.origin}/${invite ? '?de=' + invite : ''}`;
   const show = r => {
-    form.hidden = true; $('.ticket-head').hidden = true; $('#done').hidden = false;
+    form.hidden = true; $('.sheet-head').hidden = true; $('#done').hidden = false;
     const first = (r.name || '').split(' ')[0];
     if (r.granted) {
       $('#done-eye').textContent = 'Tu lugar está guardado';
