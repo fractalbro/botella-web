@@ -376,3 +376,12 @@ html.gl .story .open{min-height:100svh}
   .story .reach .d-lg,.story .ch-tide .d-lg{max-width:11ch}
 }
 @media (prefers-reduced-motion:reduce){html.gl .story>.gl{transition:none}}
+/* Cierre en 3D: luces que se encienden en el mar (por qué) y tu botella saliendo al mar (registro) */
+canvas.gl-why,canvas.gl-done{display:none}
+html.gl .why>.gl-why{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:-2}
+html.why-3d .why>#sky2{display:none}
+html.why-3d .why::after{content:"";position:absolute;inset:auto 0 0;height:50%;background:linear-gradient(transparent,rgba(5,18,31,.7));z-index:-1;pointer-events:none}
+html.why-3d .why :is(.big,.prose p){text-shadow:0 1px 18px rgba(5,18,31,.9)}
+html.gl .done>.gl-done{display:block;width:100%;height:190px;border-radius:20px;margin:0 0 22px;opacity:0;transition:opacity .6s var(--out)}
+html.gl .done>.gl-done.on{opacity:1}
+@media (prefers-reduced-motion:reduce){html.gl .done>.gl-done{transition:none}}

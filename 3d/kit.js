@@ -113,7 +113,7 @@ export function ocean({ size = 600, deep = '#03101C', skyc = '#1E4A6C', fog = '#
       float hs(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
       void main(){ vec3 V=normalize(cameraPosition-vW), N=normalize(vN); float fr=pow(1.-max(dot(N,V),0.),5.);
         vec3 c=mix(uDeep,uSky,clamp(fr*1.2,0.,1.)); vec3 R=reflect(-V,N); float d=max(dot(R,uMoonDir),0.);
-        float spark = step(.992, hs(floor(vW.xz*9.)+floor(uTime*4.)))*pow(d,10.)*1.6;
+        float spark = step(.992, hs(floor(vW.xz*9.)+floor(uTime*4.)))*pow(d,10.)*1.6*smoothstep(7.,22.,length(vW-cameraPosition));
         c+=uMoon*(pow(d,600.)*1.0+pow(d,40.)*.04+spark*.35);
         if(uSpot.w>0.){ vec2 dd=vW.xz-uSpot.xy; float s=exp(-dot(dd,dd)/(uSpot.z*uSpot.z)); c+=uSpotC*s*uSpot.w*(.4+fr); }
         float dist=length(vW-cameraPosition); c=mix(c,uFog,smoothstep(uNear,uFar,dist)); gl_FragColor=vec4(c,1.); }`

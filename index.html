@@ -192,6 +192,7 @@
         </form>
 
         <div class="done" id="done" hidden aria-live="polite">
+          <canvas class="gl-done" id="gl-done" aria-hidden="true"></canvas>
           <p class="pass" id="done-eye">Listo</p>
           <h3 class="d-lg" id="done-h"></h3>
           <p class="sec-p" id="done-p"></p>
@@ -228,6 +229,7 @@
   <!-- Por qué -->
   <section class="sec why" id="por-que" aria-labelledby="h-why">
     <svg class="sky sky-low" id="sky2" aria-hidden="true"></svg>
+    <canvas class="gl-why" id="gl-why" aria-hidden="true"></canvas>
     <svg class="const" id="const" viewBox="0 0 400 220" aria-hidden="true"></svg>
     <div class="wrap why-in">
       <h2 id="h-why" class="d-lg">Si tantos se sienten solos, nadie está tan solo como cree.</h2>
@@ -260,5 +262,6 @@
 <script src="/config.js"></script>
 <script src="/site.js"></script>
 <script type="module" src="/3d/home.js"></script>
+<script type="module">addEventListener("load", () => import("/3d/cierre.js"), { once: true });</script>
 </body>
 </html>
