@@ -261,7 +261,7 @@
 
   const form = $('#form'), err = $('#err'), go = $('#go'), adult = $('#adult'), goT = go.querySelector('span');
   adult.addEventListener('click', () => adult.setAttribute('aria-checked', adult.getAttribute('aria-checked') !== 'true'));
-  const shareText = invite => `Te mando una botella 🌊 Es una app de Lima donde grabas una pregunta con tu voz y la escuchan ocho personas de tus mismos temas. Sin fotos. Entra aquí: ${location.origin}/${invite ? '?de=' + invite : ''}`;
+  const shareText = invite => `Te mando una botella 🌊 Es una app de Lima donde grabas una pregunta con tu voz y ocho personas con tus mismos gustos la escuchan. Sin fotos. Entra aquí: ${location.origin}/${invite ? '?de=' + invite : ''}`;
   const show = r => {
     form.hidden = true; $('.sheet-head').hidden = true; $('#done').hidden = false;
     const first = (r.name || '').split(' ')[0];
