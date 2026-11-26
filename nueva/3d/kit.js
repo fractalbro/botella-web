@@ -15,9 +15,9 @@ const col = h => new THREE.Color(h);
 let _s = 7; export const rnd = () => (_s = (_s * 9301 + 49297) % 233280) / 233280; export const seed = n => { _s = n; };
 
 // ---------- escenario: render, entorno, bloom, bucle y progreso de scroll ----------
-export function stage(canvas, { fov = 35, bloom = [0.5, 0.35, 0.92], exposure = 1, ortho = 0, bg = C.bg, progress = null, active = null, budget = 1.4e6 } = {}) {
+export function stage(canvas, { fov = 35, bloom = [0.5, 0.35, 0.92], exposure = 1, ortho = 0, bg = C.bg, progress = null, active = null, budget = 8e6 } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-  renderer.transmissionResolutionScale = .5; // el vidrio dibuja la escena una vez más: a media resolución no se nota
+  renderer.transmissionResolutionScale = 1; // vidrio nítido
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = exposure;
   const scene = new THREE.Scene(); scene.background = col(bg);
   const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.55;
@@ -200,13 +200,13 @@ export function warm(renderer, scene, camera) {
   return p.catch(() => {});
 }
 // ---------- nitidez que se ajusta sola para sostener 60 cuadros ----------
-export function autoRes(renderer, composer, { budget = 1.4e6, min = .5 } = {}) {
-  const cap = () => Math.min(devicePixelRatio || 1, 2); let pr = 1, ema = 16.7, n = 0, w = 0, h = 0;
+export function autoRes(renderer, composer, { budget = 8e6, min = 0 } = {}) {
+  const cap = () => Math.min(devicePixelRatio || 1, 3); min = min || Math.max(1, Math.min(cap(), (devicePixelRatio || 1) * .8)); let pr = 1, ema = 16.7, n = 0, w = 0, h = 0;
   const apply = () => { renderer.setPixelRatio(pr); composer?.setPixelRatio?.(pr); if (w) { renderer.setSize(w, h, false); composer?.setSize(w, h); } };
   return {
     size(W, H) { w = W; h = H; pr = Math.min(cap(), Math.sqrt(budget / Math.max(1, w * h))); apply(); },
     tick(dt) { if (!dt || dt > 250) return; ema += (dt - ema) * .08; if (++n < 40) return; n = 0;
-      if (ema > 19 && pr > min) { pr = Math.max(min, pr * .85); apply(); } else if (ema < 14 && pr < Math.min(cap(), Math.sqrt(budget / Math.max(1, w * h)))) { pr = Math.min(cap(), pr * 1.08); apply(); } },
+      if (ema > 24 && pr > min) { pr = Math.max(min, pr * .85); apply(); } else if (ema < 14 && pr < Math.min(cap(), Math.sqrt(budget / Math.max(1, w * h)))) { pr = Math.min(cap(), pr * 1.08); apply(); } },
     get pr() { return pr; }
   };
 }
