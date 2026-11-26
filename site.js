@@ -21,37 +21,48 @@
   /* ---------- la costa (compartida por la portada y la bitácora) ---------- */
   const coast = (w, y0, amp) => { let d = `M-20 -20 L${w + 20} -20 L${w + 20} ${y0}`; for (let x = w + 20; x >= -20; x -= 20) { const y = y0 + Math.sin(x * .021) * amp + Math.sin(x * .057 + 1) * amp * .45; d += ` L${x} ${y.toFixed(1)}`; } return d + ' Z'; };
   const contour = (w, y0, amp, ph) => { let d = ''; for (let x = -20; x <= w + 20; x += 10) { const y = y0 + Math.sin(x * .021 + ph) * amp + Math.sin(x * .057 + 1 + ph) * amp * .45; d += (x === -20 ? 'M' : 'L') + x + ' ' + y.toFixed(1) + ' '; } return d; };
-  const soundings = (g, list) => list.forEach(([x, y, n]) => { const t = el('text', { x, y, 'font-family': 'IBM Plex Mono', 'font-size': 9, fill: '#6B7888' }, g); t.textContent = n; });
+  const soundings = (g, list) => list.forEach(([x, y, n]) => { const t = el('text', { x, y, 'font-family': 'Familjen Grotesk', 'font-style': 'italic', 'font-size': 10, fill: '#33475A' }, g); t.textContent = n; });
 
   /* ---------- portada ---------- */
   const hm = $('#hero-map');
   if (hm) {
     const W = 400;
     const g = el('g', {}, hm);
-    [0, 1, 2, 3, 4].forEach(i => el('path', { d: contour(W, 80 + i * 40, 9 - i, i * .6), fill: 'none', stroke: '#13233A', 'stroke-width': .7, opacity: .5 - i * .08 }, g));
-    el('path', { d: coast(W, 46, 12), fill: '#D8CCB0' }, g);
-    el('path', { d: contour(W, 46, 12, 0), fill: 'none', stroke: '#13233A', 'stroke-width': 1.3 }, g);
-    soundings(g, [[34, 104, 12], [118, 128, 18], [270, 132, 23], [214, 214, 31], [64, 236, 27], [344, 232, 40], [150, 286, 46], [362, 98, 15]]);
-    const lbl = el('text', { x: 262, y: 26, 'font-family': 'IBM Plex Mono', 'font-size': 9, 'letter-spacing': '.08em', fill: '#44546A' }, g); lbl.textContent = 'COSTA VERDE';
+    [0, 1, 2, 3, 4].forEach(i => el('path', { d: contour(W, 80 + i * 40, 9 - i, i * .6), fill: 'none', stroke: '#0C1A29', 'stroke-width': .7, opacity: .5 - i * .08 }, g));
+    el('path', { d: coast(W, 53, 12), fill: '#B9CC9B' }, g);
+    el('path', { d: contour(W, 53, 12, .15), fill: 'none', stroke: '#0C1A29', 'stroke-width': .5, 'stroke-dasharray': '1 2' }, g);
+    el('path', { d: coast(W, 46, 12), fill: '#EFD898' }, g);
+    el('path', { d: contour(W, 46, 12, 0), fill: 'none', stroke: '#0C1A29', 'stroke-width': 1.3 }, g);
+    // rosa de los vientos, como en las cartas del Callao
+    const ro = el('g', { transform: 'translate(338 120)', class: 'rose' }, g);
+    el('circle', { r: 40, fill: 'none', stroke: '#AE1767', 'stroke-width': .8 }, ro);
+    el('circle', { r: 31, fill: 'none', stroke: '#AE1767', 'stroke-width': .5 }, ro);
+    for (let a = 0; a < 360; a += 5) { const r1 = a % 30 === 0 ? 33 : a % 10 === 0 ? 36 : 38, rad = a * Math.PI / 180; el('line', { x1: (Math.sin(rad) * r1).toFixed(2), y1: (-Math.cos(rad) * r1).toFixed(2), x2: (Math.sin(rad) * 40).toFixed(2), y2: (-Math.cos(rad) * 40).toFixed(2), stroke: '#AE1767', 'stroke-width': a % 30 === 0 ? .9 : .5 }, ro); }
+    el('path', { d: 'M0 -28 L4 0 L0 28 L-4 0 Z M-28 0 L0 -4 L28 0 L0 4 Z', fill: 'none', stroke: '#AE1767', 'stroke-width': .8 }, ro);
+    el('path', { d: 'M0 -28 L4 0 L0 0 Z M28 0 L0 4 L0 0 Z M0 28 L-4 0 L0 0 Z M-28 0 L0 -4 L0 0 Z', fill: '#AE1767' }, ro);
+    const nN = el('text', { x: 0, y: -45, 'text-anchor': 'middle', 'font-family': 'IBM Plex Mono', 'font-size': 9, fill: '#AE1767' }, ro); nN.textContent = 'N';
+    const vr = el('text', { x: 0, y: 52, 'text-anchor': 'middle', 'font-family': 'IBM Plex Mono', 'font-size': 5.5, fill: '#AE1767', 'letter-spacing': '.04em' }, ro); vr.textContent = 'VAR 2°W 2026';
+    soundings(g, [[34, 104, 12], [118, 128, 18], [270, 132, 23], [214, 214, 31], [64, 236, 27], [344, 232, 40], [150, 286, 46]]);
+    const lbl = el('text', { x: 262, y: 26, 'font-family': 'IBM Plex Mono', 'font-size': 9, 'letter-spacing': '.08em', fill: '#33475A' }, g); lbl.textContent = 'COSTA VERDE';
     const you = [214, 56];
-    el('rect', { x: you[0] - 4, y: you[1] - 4, width: 8, height: 8, fill: '#13233A' }, g);
-    const ty = el('text', { x: you[0] + 10, y: you[1] + 3, 'font-family': 'IBM Plex Mono', 'font-size': 9, fill: '#13233A' }, g); ty.textContent = 'TÚ';
+    el('rect', { x: you[0] - 4, y: you[1] - 4, width: 8, height: 8, fill: '#0C1A29' }, g);
+    const ty = el('text', { x: you[0] + 10, y: you[1] + 3, 'font-family': 'IBM Plex Mono', 'font-size': 9, fill: '#0C1A29' }, g); ty.textContent = 'TÚ';
     const marks = [[150, 236], [58, 172], [96, 270], [236, 276], [292, 186], [346, 256], [30, 252], [206, 176]];
     const hub = [172, 146];
-    const r = el('path', { class: 'route', d: `M${you[0]} ${you[1]} C 226 100, 150 110, ${hub[0]} ${hub[1]}`, fill: 'none', stroke: '#B93A24', 'stroke-width': 1.4 }, g);
+    const r = el('path', { class: 'route', d: `M${you[0]} ${you[1]} C 226 100, 150 110, ${hub[0]} ${hub[1]}`, fill: 'none', stroke: '#AE1767', 'stroke-width': 1.4 }, g);
     const len = r.getTotalLength(); r.style.setProperty('--len', len);
     marks.forEach(([x, y], i) => {
-      const l = el('path', { class: 'route', d: `M${hub[0]} ${hub[1]} L${x} ${y}`, fill: 'none', stroke: '#B93A24', 'stroke-width': .8, 'stroke-dasharray': '2 3', opacity: .7 }, g);
+      const l = el('path', { class: 'route', d: `M${hub[0]} ${hub[1]} L${x} ${y}`, fill: 'none', stroke: '#AE1767', 'stroke-width': .8, 'stroke-dasharray': '2 3', opacity: .7 }, g);
       const L = Math.hypot(x - hub[0], y - hub[1]); l.style.setProperty('--len', L); l.style.animationDelay = (1.6 + i * .09) + 's';
       const m = el('g', { class: 'mark' }, g); m.style.animationDelay = (2 + i * .09) + 's';
-      el('circle', { cx: x, cy: y, r: 5, fill: '#EEE7D8', stroke: '#B93A24', 'stroke-width': 1.4 }, m);
-      const t = el('text', { x: x + 9, y: y + 3, 'font-family': 'IBM Plex Mono', 'font-size': 9, fill: '#B93A24' }, m); t.textContent = '0' + (i + 1);
+      el('circle', { cx: x, cy: y, r: 5, fill: '#9DCBE0', stroke: '#AE1767', 'stroke-width': 1.4 }, m);
+      const t = el('text', { x: x + 9, y: y + 3, 'font-family': 'IBM Plex Mono', 'font-size': 9, fill: '#AE1767' }, m); t.textContent = '0' + (i + 1);
     });
     const b = el('g', { transform: `translate(${hub[0]} ${hub[1]})` }, g);
     const bi = el('g', { class: 'bob' }, b);
-    el('rect', { x: -12, y: -4, width: 22, height: 8, rx: 3, fill: '#EEE7D8', stroke: '#13233A', 'stroke-width': 1.2 }, bi);
-    el('rect', { x: -8, y: -1.6, width: 12, height: 3.2, rx: 1, fill: '#D8CCB0' }, bi);
-    el('rect', { x: 10, y: -2.4, width: 4.5, height: 4.8, fill: '#13233A' }, bi);
+    el('rect', { x: -12, y: -4, width: 22, height: 8, rx: 3, fill: '#FBFAF5', stroke: '#0C1A29', 'stroke-width': 1.2 }, bi);
+    el('rect', { x: -8, y: -1.6, width: 12, height: 3.2, rx: 1, fill: '#EFD898' }, bi);
+    el('rect', { x: 10, y: -2.4, width: 4.5, height: 4.8, fill: '#0C1A29' }, bi);
   }
 
   /* ---------- tinta que se asienta al entrar ---------- */
@@ -117,50 +128,51 @@
     document.documentElement.classList.add('pinned');
     const W = 400;
     const g = el('g', {}, lm);
-    [0, 1, 2, 3].forEach(i => el('path', { d: contour(W, 80 + i * 44, 8 - i, i * .7), fill: 'none', stroke: '#13233A', 'stroke-width': .6, opacity: .4 - i * .07 }, g));
-    el('path', { d: coast(W, 44, 9), fill: '#D8CCB0' }, g);
-    el('path', { d: contour(W, 44, 9, 0), fill: 'none', stroke: '#13233A', 'stroke-width': 1.2 }, g);
+    [0, 1, 2, 3].forEach(i => el('path', { d: contour(W, 80 + i * 44, 8 - i, i * .7), fill: 'none', stroke: '#0C1A29', 'stroke-width': .6, opacity: .4 - i * .07 }, g));
+    el('path', { d: coast(W, 50, 9), fill: '#B9CC9B' }, g);
+    el('path', { d: coast(W, 44, 9), fill: '#EFD898' }, g);
+    el('path', { d: contour(W, 44, 9, 0), fill: 'none', stroke: '#0C1A29', 'stroke-width': 1.2 }, g);
     soundings(g, [[30, 100, 12], [350, 96, 15], [240, 140, 22], [60, 250, 30], [360, 220, 38]]);
     const you = [206, 52], hub = [196, 150];
     const M8 = [[110, 108], [60, 160], [300, 104], [350, 160], [96, 222], [178, 238], [262, 210], [326, 246]];
     const M4 = [[30, 286], [140, 290], [262, 292], [376, 286]];
     const THEM = 4;
     const lineTo = (a, b, attrs) => { const l = el('path', Object.assign({ d: `M${a[0]} ${a[1]} L${b[0]} ${b[1]}`, fill: 'none' }, attrs), g); const L = Math.hypot(b[0] - a[0], b[1] - a[1]); l.setAttribute('stroke-dasharray', `${L} ${L}`); l.setAttribute('stroke-dashoffset', L); return [l, L]; };
-    const launch = el('path', { d: `M${you[0]} ${you[1]} C 214 92, 170 104, ${hub[0]} ${hub[1]}`, fill: 'none', stroke: '#B93A24', 'stroke-width': 1.5 }, g);
+    const launch = el('path', { d: `M${you[0]} ${you[1]} C 214 92, 170 104, ${hub[0]} ${hub[1]}`, fill: 'none', stroke: '#AE1767', 'stroke-width': 1.5 }, g);
     const LL = launch.getTotalLength(); launch.setAttribute('stroke-dasharray', `${LL} ${LL}`); launch.setAttribute('stroke-dashoffset', LL);
-    const spokes = M8.map(m => lineTo(hub, m, { stroke: '#B93A24', 'stroke-width': .8, opacity: .65 }));
-    const spokes4 = M4.map(m => lineTo(hub, m, { stroke: '#B93A24', 'stroke-width': .8, opacity: .45 }));
+    const spokes = M8.map(m => lineTo(hub, m, { stroke: '#AE1767', 'stroke-width': .8, opacity: .65 }));
+    const spokes4 = M4.map(m => lineTo(hub, m, { stroke: '#AE1767', 'stroke-width': .8, opacity: .45 }));
     const mark = (x, y, label, dashed) => {
       const m = el('g', { opacity: 0 }, g);
-      const c = el('circle', { cx: x, cy: y, r: 7, fill: '#E5DCC8', stroke: '#B93A24', 'stroke-width': 1.4, 'stroke-dasharray': dashed ? '2 2' : 'none' }, m);
-      const t = el('text', { x: x + 10, y: y + 3, 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#B93A24' }, m); t.textContent = label;
+      const c = el('circle', { cx: x, cy: y, r: 7, fill: '#C9E2EE', stroke: '#AE1767', 'stroke-width': 1.4, 'stroke-dasharray': dashed ? '2 2' : 'none' }, m);
+      const t = el('text', { x: x + 10, y: y + 3, 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#AE1767' }, m); t.textContent = label;
       return { m, c, t, x, y };
     };
     const m8 = M8.map(([x, y], i) => mark(x, y, '0' + (i + 1)));
     const m4 = M4.map(([x, y], i) => mark(x, y, String(9 + i).padStart(2, '0'), true));
     // tú
-    el('rect', { x: you[0] - 4.5, y: you[1] - 4.5, width: 9, height: 9, fill: '#13233A' }, g);
-    const youT = el('text', { x: you[0] + 11, y: you[1] + 3, 'font-family': 'IBM Plex Mono', 'font-size': 12, fill: '#13233A' }, g); youT.textContent = 'TÚ';
+    el('rect', { x: you[0] - 4.5, y: you[1] - 4.5, width: 9, height: 9, fill: '#0C1A29' }, g);
+    const youT = el('text', { x: you[0] + 11, y: you[1] + 3, 'font-family': 'IBM Plex Mono', 'font-size': 12, fill: '#0C1A29' }, g); youT.textContent = 'TÚ';
     // ondas de grabación
-    const rings = [0, 1, 2].map(() => el('circle', { cx: you[0], cy: you[1], r: 6, fill: 'none', stroke: '#B93A24', 'stroke-width': 1, opacity: 0 }, g));
+    const rings = [0, 1, 2].map(() => el('circle', { cx: you[0], cy: you[1], r: 6, fill: 'none', stroke: '#AE1767', 'stroke-width': 1, opacity: 0 }, g));
     // botella
     const bottle = el('g', { opacity: 0 }, g);
-    el('rect', { x: -11, y: -4, width: 20, height: 8, rx: 3, fill: '#EEE7D8', stroke: '#13233A', 'stroke-width': 1.2 }, bottle);
-    el('rect', { x: 9, y: -2.4, width: 4.5, height: 4.8, fill: '#13233A' }, bottle);
+    el('rect', { x: -11, y: -4, width: 20, height: 8, rx: 3, fill: '#FBFAF5', stroke: '#0C1A29', 'stroke-width': 1.2 }, bottle);
+    el('rect', { x: 9, y: -2.4, width: 4.5, height: 4.8, fill: '#0C1A29' }, bottle);
     // marea
     const tide = el('g', { opacity: 0 }, g);
-    [0, 1].forEach(i => el('path', { d: `M${hub[0] - 26} ${hub[1] + 18 + i * 7} q6.5 -5 13 0 t13 0 t13 0 t13 0`, fill: 'none', stroke: '#13233A', 'stroke-width': 1 }, tide));
-    const tideT = el('text', { x: hub[0] + 32, y: hub[1] + 26, 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#13233A' }, tide); tideT.textContent = '+6 H';
+    [0, 1].forEach(i => el('path', { d: `M${hub[0] - 26} ${hub[1] + 18 + i * 7} q6.5 -5 13 0 t13 0 t13 0 t13 0`, fill: 'none', stroke: '#0C1A29', 'stroke-width': 1 }, tide));
+    const tideT = el('text', { x: hub[0] + 32, y: hub[1] + 26, 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#0C1A29' }, tide); tideT.textContent = '+6 H';
     // respuesta
     const them = m8[THEM];
-    const reply = el('path', { d: `M${them.x} ${them.y} C 120 140, 180 70, ${you[0]} ${you[1]}`, fill: 'none', stroke: '#13233A', 'stroke-width': 1.6 }, g);
+    const reply = el('path', { d: `M${them.x} ${them.y} C 120 140, 180 70, ${you[0]} ${you[1]}`, fill: 'none', stroke: '#0C1A29', 'stroke-width': 1.6 }, g);
     const RL = reply.getTotalLength(); reply.setAttribute('stroke-dasharray', `${RL} ${RL}`); reply.setAttribute('stroke-dashoffset', RL);
-    const pulses = [0, 1, 2].map(() => el('circle', { r: 3, fill: '#B93A24', opacity: 0 }, g));
+    const pulses = [0, 1, 2].map(() => el('circle', { r: 3, fill: '#AE1767', opacity: 0 }, g));
     const chip = el('g', { opacity: 0 }, g);
-    el('rect', { x: 80, y: 110, width: 184, height: 22, fill: '#13233A' }, chip);
-    const chipT = el('text', { x: 172, y: 124.5, 'text-anchor': 'middle', 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#EEE7D8', 'letter-spacing': '.06em' }, chip); chipT.textContent = 'TEMA EN COMÚN: EL CINE';
-    const themT = el('text', { x: them.x - 10, y: them.y + 22, 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#13233A', opacity: 0 }, g); themT.textContent = 'AMA EL CINE';
-    const key = (x, y) => { const k = el('g', { opacity: 0 }, g); el('circle', { cx: 0, cy: 0, r: 4, fill: 'none', stroke: '#B93A24', 'stroke-width': 1.5 }, k); el('path', { d: 'M4 0h9M10 0v4M13 0v3', stroke: '#B93A24', 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round' }, k); k.dataset.x = x; k.dataset.y = y; return k; };
+    el('rect', { x: 80, y: 110, width: 184, height: 22, fill: '#0C1A29' }, chip);
+    const chipT = el('text', { x: 172, y: 124.5, 'text-anchor': 'middle', 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#FBFAF5', 'letter-spacing': '.06em' }, chip); chipT.textContent = 'TEMA EN COMÚN: EL CINE';
+    const themT = el('text', { x: them.x - 10, y: them.y + 22, 'font-family': 'IBM Plex Mono', 'font-size': 11, fill: '#0C1A29', opacity: 0 }, g); themT.textContent = 'AMA EL CINE';
+    const key = (x, y) => { const k = el('g', { opacity: 0 }, g); el('circle', { cx: 0, cy: 0, r: 4, fill: 'none', stroke: '#AE1767', 'stroke-width': 1.5 }, k); el('path', { d: 'M4 0h9M10 0v4M13 0v3', stroke: '#AE1767', 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round' }, k); k.dataset.x = x; k.dataset.y = y; return k; };
     const k1 = key(you[0] - 36, you[1] + 18), k2 = key(them.x - 34, them.y - 18);
 
     let lastK = -1;
@@ -193,7 +205,7 @@
       });
       // 5 descorchada
       const op = seg(p, T[4] + .01, T[4] + .05);
-      them.c.setAttribute('fill', op > .5 ? '#B93A24' : '#E5DCC8');
+      them.c.setAttribute('fill', op > .5 ? '#AE1767' : '#C9E2EE');
       them.c.setAttribute('r', (7 + Math.sin(op * Math.PI) * 4).toFixed(1));
       themT.setAttribute('opacity', seg(p, T[4] + .03, T[4] + .06).toFixed(2));
       // 6 responde
@@ -206,7 +218,7 @@
         const on = (p >= T[5] + .01) && t > 0 && t < 1;
         const q = reply.getPointAtLength(RL * (p < T[6] ? t * rp : t));
         c.setAttribute('cx', q.x.toFixed(1)); c.setAttribute('cy', q.y.toFixed(1)); c.setAttribute('opacity', on ? 1 : 0);
-        c.setAttribute('fill', p >= T[6] && i === 1 ? '#13233A' : '#B93A24');
+        c.setAttribute('fill', p >= T[6] && i === 1 ? '#0C1A29' : '#AE1767');
       });
       chip.setAttribute('opacity', seg(p, T[6] + .02, T[6] + .05).toFixed(2));
       // 8 llaves y nombres
@@ -215,7 +227,7 @@
       const both = p >= T[7] + .09;
       youT.textContent = both ? 'TÚ · MAJO' : 'TÚ';
       themT.textContent = both ? 'LEO' : 'AMA EL CINE';
-      themT.setAttribute('fill', both ? '#B93A24' : '#13233A');
+      themT.setAttribute('fill', both ? '#AE1767' : '#0C1A29');
       // texto
       let k = 0; while (k < 7 && p >= T[k + 1]) k++;
       if (k !== lastK) {
@@ -226,6 +238,40 @@
     };
     renderLog(0);
   }
+
+
+  /* ---------- isobatas entre zonas y la derrota magenta ---------- */
+  const Z = { hero: '#9DCBE0', found: '#B5D8E8', log: '#C9E2EE', legend: '#DAEBF2', off: '#E8F2F5', deep: '#FBFAF5' };
+  const iso = (before, a, b, m, ph) => {
+    const d = document.createElement('div'); d.className = 'iso'; d.setAttribute('aria-hidden', 'true');
+    d.style.setProperty('--a', a); d.style.setProperty('--b', b);
+    let w = 'M0 15'; for (let x = 0; x <= 400; x += 10) w += ` L${x} ${(15 + Math.sin(x * .03 + ph) * 6 + Math.sin(x * .011 + ph * 2) * 4).toFixed(1)}`;
+    d.innerHTML = `<svg viewBox="0 0 400 30" preserveAspectRatio="none"><path class="f" d="${w} L400 30 L0 30 Z"/><path class="l" d="${w}"/></svg><span class="mono">${m} m</span>`;
+    before.parentNode.insertBefore(d, before); return d;
+  };
+  [['#voces', Z.hero, Z.found, 5], ['#como', Z.found, Z.log, 10], ['.legend', Z.log, Z.legend, 20], ['.off', Z.legend, Z.off, 30], ['.calm', Z.off, Z.deep, 50]]
+    .forEach(([sel, a, b, m], i) => { const n = $(sel); if (n) iso(n, a, b, m, i * 1.3); });
+  const main = $('main'), spine = document.createElement('div');
+  spine.className = 'spine'; spine.setAttribute('aria-hidden', 'true');
+  spine.innerHTML = '<i class="spine-g"></i><i class="spine-l"></i><svg class="spine-b" viewBox="-12 -5 27 10"><rect x="-11" y="-4" width="20" height="8" rx="3" fill="#FBFAF5" stroke="#0C1A29" stroke-width="1.2"/><rect x="9" y="-2.4" width="4.5" height="4.8" fill="#0C1A29"/></svg>';
+  main.appendChild(spine);
+  const WPS = [['#h-voces', '01'], ['#h-como', '02'], ['#h-leg', '03'], ['#h-off', '04'], ['#h-calm', '05'], ['#h-join', '06'], ['#h-faq', '07']];
+  const wps = WPS.map(([sel, n]) => { const w = document.createElement('b'); w.className = 'wp'; w.textContent = n; spine.appendChild(w); return [$(sel), w]; });
+  const endW = document.createElement('b'); endW.className = 'wp end'; endW.innerHTML = '<b>08</b>'; spine.appendChild(endW);
+  let spTop = 0, spH = 1;
+  const layoutSpine = () => {
+    const mt = main.getBoundingClientRect().top + scrollY;
+    const top = $('#voces').getBoundingClientRect().top + scrollY - mt;
+    const end = $('.night').getBoundingClientRect().top + scrollY - mt;
+    spTop = top + mt; spH = Math.max(1, end - top);
+    spine.style.top = top + 'px'; spine.style.height = spH + 'px';
+    wps.forEach(([h, w]) => { if (!h) return; const sec = h.closest('section'); const y = (sec.classList.contains('log') ? sec.getBoundingClientRect().top + scrollY + 96 : h.getBoundingClientRect().top + scrollY) - spTop; w.style.top = Math.max(0, y) + 'px'; w.dataset.y = y; w.style.setProperty('--zone', getComputedStyle(sec).getPropertyValue('--zone') || '#FBFAF5'); });
+    endW.style.top = (spH - 11) + 'px'; endW.dataset.y = spH;
+  };
+  layoutSpine();
+  document.fonts && document.fonts.ready.then(() => { layoutSpine(); kick(); });
+  addEventListener('resize', layoutSpine);
+  addEventListener('load', layoutSpine);
 
   /* ---------- fuera del mapa, estrellas y marea final ---------- */
   const strikes = $$('.strike li');
@@ -255,6 +301,12 @@
     const dark = [night, foot].some(n => { const r = n.getBoundingClientRect(); return r.top < 50 && r.bottom > 50; });
     bar.classList.toggle('dark', dark);
     let s = sheets[0][1]; sheets.forEach(([n, t]) => { if (n && n.getBoundingClientRect().top < innerHeight * .4) s = t; }); if (sheet.textContent !== s) sheet.textContent = s;
+    // derrota
+    const sp = reduce ? 1 : clamp((y + innerHeight * .55 - spTop) / spH);
+    spine.style.setProperty('--sp', sp.toFixed(4));
+    const yy = sp * spH; wps.forEach(([, w]) => w.classList.toggle('on', +w.dataset.y <= yy + 1)); endW.classList.toggle('on', sp >= .999);
+    let zb = Z.hero; [['#voces', Z.found], ['#como', Z.log], ['.legend', Z.legend], ['.off', Z.off], ['.calm', Z.deep]].forEach(([q, c]) => { const n = $(q); if (n && n.getBoundingClientRect().top < 60) zb = c; });
+    bar.style.setProperty('--barbg', zb);
     // cinta
     tapeV += (y - lastY) * .3; lastY = y;
     // bitácora
