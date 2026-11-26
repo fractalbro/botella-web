@@ -1,7 +1,7 @@
 # Botella · sitio web
 
 La página para mandar por WhatsApp: cuenta qué es Botella, deja escuchar botellas de ejemplo y registra a los primeros 100 de Lima.
-Sitio estático sin build: `index.html`, `site.css`, `site.js`, `config.js`. Voces de ejemplo en `v/` (las mismas de la app).
+Sitio estático sin build: `index.html`, `site.css`, `site.js`, `config.js`. Diseño "Carta náutica": mapa del mar de Lima, bitácora que avanza con el scroll y pase de registro, sin librerías. Voces de ejemplo en `v/` (las mismas de la app).
 
 ## Registro
 Quien se registra deja nombre, WhatsApp y distrito. La función `join_waitlist` lo guarda en la tabla `waitlist` del Supabase de la app:
