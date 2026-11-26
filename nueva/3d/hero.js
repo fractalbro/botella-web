@@ -9,7 +9,6 @@ else {
   const prog = () => Math.max(0, Math.min(1, scrollY / (hero.offsetHeight * .9)));
   const MOB = innerWidth < 760;
   const S = stage(cv, { fov: MOB ? 44 : 34, bloom: [0.5, 0.4, 0.9], progress: prog, active: () => inView });
-  S.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
   const { scene, camera } = S; scene.fog = new THREE.Fog('#0B2436', 40, 300); scene.environmentIntensity = .45;
   const sk = sky(scene, { hz: '#173E5C' });
   const mpos = MOB ? new THREE.Vector3(-8, 26, -90) : new THREE.Vector3(-22, 18, -90); const mo = moon(MOB ? 3 : 4); mo.position.copy(mpos); scene.add(mo);
@@ -18,10 +17,10 @@ else {
   scene.add(new THREE.HemisphereLight('#9FD8E8', '#05121F', .45)); const key = new THREE.DirectionalLight('#EAF6F2', 1.4); key.position.copy(mpos); scene.add(key);
   // faro
   const LX = MOB ? 16 : 40, LZ = -70;
-  const rock = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 2), new THREE.MeshStandardMaterial({ color: '#14324A', roughness: .95, flatShading: true })); rock.scale.set(9, 3, 7); rock.position.set(LX, SEA - 1, LZ); scene.add(rock);
+  const rock = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 5), new THREE.MeshStandardMaterial({ color: '#14324A', roughness: .9 })); rock.scale.set(9, 3, 7); rock.position.set(LX, SEA - 1, LZ); scene.add(rock);
   const lh = new THREE.Group(); lh.position.set(LX, SEA + 1.4, LZ); scene.add(lh);
   const wht = new THREE.MeshStandardMaterial({ color: '#EFE9E1', roughness: .55 }), red = new THREE.MeshStandardMaterial({ color: '#E8585E', roughness: .55 });
-  let y = 0; [[1.4, 1.25], [1.25, 1.1], [1.1, .95], [.95, .85]].forEach(([a, b], i) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(b, a, 2, 32), i % 2 ? red : wht); m.position.y = y + 1; lh.add(m); y += 2; });
+  let y = 0; [[1.4, 1.25], [1.25, 1.1], [1.1, .95], [.95, .85]].forEach(([a, b], i) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(b, a, 2, 48), i % 2 ? red : wht); m.position.y = y + 1; lh.add(m); y += 2; });
   const lan = new THREE.Mesh(new THREE.CylinderGeometry(.75, .75, 1.1, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color('#FFE7B0').multiplyScalar(3) })); lan.position.y = y + .55; lh.add(lan); const LY = y + .55;
   const L = 130; const bgeo = new THREE.ConeGeometry(12, L, 40, 1, true); bgeo.translate(0, -L / 2, 0); bgeo.rotateX(-Math.PI / 2); bgeo.rotateY(Math.PI);
   const beamM = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false, uniforms: { uI: { value: .7 } },
@@ -49,5 +48,5 @@ else {
     lights.forEach(m => { const u = m.userData; const on = u.i < 8 ? Math.max(0, Math.min(1, (p - .5 - u.i * .03) / .1)) : Math.max(0, Math.min(.6, (p - .78 - (u.i - 8) * .03) / .1)); m.scale.setScalar(Math.max(.001, on)); m.position.set(u.x, oc.hAt(u.x, u.z, t) + SEA + .4, u.z); });
     camera.position.set(lerp(0, HS.x * .4, c) + S.pointer.x * .3, lerp(1.4, SEA + 6, c), lerp(14, 18, c)); camera.lookAt(lerp(0, HS.x, c), lerp(MOB ? -.6 : 1.2, SEA - 1, c), lerp(0, HS.z - 6, c));
   });
-  document.documentElement.classList.add('gl-on');
+  S.go().then(() => document.documentElement.classList.add('gl-on'));
 }

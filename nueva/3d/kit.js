@@ -15,9 +15,9 @@ const col = h => new THREE.Color(h);
 let _s = 7; export const rnd = () => (_s = (_s * 9301 + 49297) % 233280) / 233280; export const seed = n => { _s = n; };
 
 // ---------- escenario: render, entorno, bloom, bucle y progreso de scroll ----------
-export function stage(canvas, { fov = 35, bloom = [0.5, 0.35, 0.92], exposure = 1, ortho = 0, bg = C.bg, progress = null, active = null } = {}) {
+export function stage(canvas, { fov = 35, bloom = [0.5, 0.35, 0.92], exposure = 1, ortho = 0, bg = C.bg, progress = null, active = null, budget = 1.4e6 } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.transmissionResolutionScale = .5; // el vidrio dibuja la escena una vez más: a media resolución no se nota
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = exposure;
   const scene = new THREE.Scene(); scene.background = col(bg);
   const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.55;
@@ -26,9 +26,9 @@ export function stage(canvas, { fov = 35, bloom = [0.5, 0.35, 0.92], exposure = 
   composer.addPass(new RenderPass(scene, camera));
   const bp = new UnrealBloomPass(new THREE.Vector2(256, 256), ...bloom); composer.addPass(bp);
   composer.addPass(new OutputPass()); if (location.search.includes('nobloom')) bp.enabled = false;
-  const fns = []; let w = 0, h = 0;
+  const fns = []; let w = 0, h = 0; const ar = autoRes(renderer, composer, { budget });
   const size = () => {
-    w = canvas.clientWidth; h = canvas.clientHeight; renderer.setSize(w, h, false); composer.setSize(w, h);
+    w = canvas.clientWidth; h = canvas.clientHeight; ar.size(w, h);
     if (ortho) { const a = w / h, s = ortho; camera.left = -s * a; camera.right = s * a; camera.top = s; camera.bottom = -s; } else camera.aspect = w / h;
     // pantallas bajas (iPhone SE): subo la escena para que no choque con el titular
     const lift = w < 900 ? Math.max(0, Math.min(.16, (1.75 - h / w) * .4)) : 0;
@@ -36,14 +36,16 @@ export function stage(canvas, { fov = 35, bloom = [0.5, 0.35, 0.92], exposure = 
     camera.updateProjectionMatrix();
   };
   size(); addEventListener('resize', size);
-  const st = { renderer, scene, camera, composer, bloom: bp, p: 0, pointer: new THREE.Vector2(), t: 0, on: f => fns.push(f), get aspect() { return w / h; } };
+  // no se dibuja hasta que los shaders estén compilados en segundo plano (st.go): así no hay congelones
+  const st = { renderer, scene, camera, composer, bloom: bp, p: 0, pointer: new THREE.Vector2(), t: 0, live: false, on: f => fns.push(f), get aspect() { return w / h; },
+    go: () => warm(renderer, scene, camera).then(() => { fns.forEach(f => f(st.t, st.p, 0)); composer.render(); st.live = true; }) };
   addEventListener('pointermove', e => { st.pointer.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); });
   const prog = progress || (() => { const m = document.documentElement.scrollHeight - innerHeight; return m > 0 ? scrollY / m : 0; });
-  let sp = prog(); const clock = new THREE.Clock();
-  const tick = () => {
+  let sp = prog(); const clock = new THREE.Clock(); let last = 0;
+  const tick = now => {
     const dt = Math.min(clock.getDelta(), 0.05); st.t += REDUCE ? 0 : dt;
     sp += (prog() - sp) * (REDUCE ? 1 : 1 - Math.pow(0.0015, dt)); st.p = sp; // seguimiento suave, sin velocidad constante
-    if (!active || active()) { fns.forEach(f => f(st.t, st.p, dt)); composer.render(); } // fuera de la historia no se dibuja (batería)
+    if (st.live && (!active || active())) { fns.forEach(f => f(st.t, st.p, dt)); composer.render(); if (last) ar.tick(now - last); last = now; } else last = 0; // fuera de vista no se dibuja (batería)
     requestAnimationFrame(tick);
   };
   if (location.search.includes('rec')) { window.__frame = dt => { st.t += dt; sp = prog(); st.p = sp; fns.forEach(f => f(st.t, st.p, dt)); composer.render(); }; window.__frame(0.016); }
@@ -103,23 +105,23 @@ export function moon(r = 6) {
 
 // ---------- mar de noche con olas, fresnel y reflejo de luna ----------
 export function ocean({ size = 600, deep = '#03101C', skyc = '#1E4A6C', fog = '#123049', moonDir = [0, 0.35, -1], moonCol = '#EAF6F2', amp = 1, fogNear = 40, fogFar = 420 } = {}) {
-  const geo = new THREE.PlaneGeometry(size, size, 220, 220); geo.rotateX(-Math.PI / 2);
+  const geo = new THREE.PlaneGeometry(size, size, 160, 160); geo.rotateX(-Math.PI / 2);
   const m = new THREE.ShaderMaterial({
     uniforms: { uTime: { value: 0 }, uAmp: { value: amp }, uDeep: { value: col(deep) }, uSky: { value: col(skyc) }, uFog: { value: col(fog) }, uMoonDir: { value: new THREE.Vector3(...moonDir).normalize() }, uMoon: { value: col(moonCol) }, uNear: { value: fogNear }, uFar: { value: fogFar }, uSpot: { value: new THREE.Vector4(0, 0, 0, 0) }, uSpotC: { value: col('#FFE7B0') } },
     vertexShader: `uniform float uTime,uAmp; varying vec3 vW; varying vec3 vN;
-      float h(vec2 p){ return uAmp*( sin(p.x*.18+uTime*.7)*.35 + sin(p.y*.27+uTime*.9+p.x*.08)*.25 + sin((p.x*.6+p.y*.8)+uTime*1.6)*.07 + sin((p.x*-1.3+p.y*1.1)+uTime*2.1)*.035 ); }
+      float h(vec2 p){ return uAmp*( sin(p.x*.18+uTime*.7)*.35 + sin(p.y*.27+uTime*.9+p.x*.08)*.25 + sin((p.x*.6+p.y*.8)+uTime*1.1)*.06 + sin((p.x*-1.3+p.y*1.1)+uTime*1.4)*.025 ); }
       void main(){ vec3 p=position; vec2 q=(modelMatrix*vec4(p,1.)).xz; p.y+=h(q); float e=.15; vN=normalize(vec3(h(q-vec2(e,0))-h(q+vec2(e,0)),2.*e,h(q-vec2(0,e))-h(q+vec2(0,e)))); vW=(modelMatrix*vec4(p,1.)).xyz; gl_Position=projectionMatrix*viewMatrix*vec4(vW,1.); }`,
     fragmentShader: `uniform vec3 uDeep,uSky,uFog,uMoonDir,uMoon,uSpotC; uniform float uNear,uFar,uTime; uniform vec4 uSpot; varying vec3 vW; varying vec3 vN;
       float hs(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
       void main(){ vec3 V=normalize(cameraPosition-vW), N=normalize(vN); float fr=pow(1.-max(dot(N,V),0.),5.);
         vec3 c=mix(uDeep,uSky,clamp(fr*1.2,0.,1.)); vec3 R=reflect(-V,N); float d=max(dot(R,uMoonDir),0.);
-        float spark = step(.992, hs(floor(vW.xz*9.)+floor(uTime*4.)))*pow(d,10.)*1.6*smoothstep(7.,22.,length(vW-cameraPosition));
+        float r0=hs(floor(vW.xz*9.)); float spark = step(.985, r0)*pow(.5+.5*sin(uTime*1.3+r0*517.),8.)*pow(d,10.)*1.6*smoothstep(7.,22.,length(vW-cameraPosition));
         c+=uMoon*(pow(d,600.)*1.0+pow(d,40.)*.04+spark*.35);
         if(uSpot.w>0.){ vec2 dd=vW.xz-uSpot.xy; float s=exp(-dot(dd,dd)/(uSpot.z*uSpot.z)); c+=uSpotC*s*uSpot.w*(.4+fr); }
         float dist=length(vW-cameraPosition); c=mix(c,uFog,smoothstep(uNear,uFar,dist)); gl_FragColor=vec4(c,1.); }`
   });
   const mesh = new THREE.Mesh(geo, m);
-  const hAt = (x, z, t) => { const a = m.uniforms.uAmp.value; return a * (Math.sin(x * .18 + t * .7) * .35 + Math.sin(z * .27 + t * .9 + x * .08) * .25 + Math.sin((x * .6 + z * .8) + t * 1.6) * .07); };
+  const hAt = (x, z, t) => { const a = m.uniforms.uAmp.value; return a * (Math.sin(x * .18 + t * .7) * .35 + Math.sin(z * .27 + t * .9 + x * .08) * .25 + Math.sin((x * .6 + z * .8) + t * 1.1) * .06); };
   return { mesh, mat: m, hAt, update: t => { m.uniforms.uTime.value = t; } };
 }
 
@@ -181,6 +183,34 @@ export function pressy() {
     b.addEventListener('pointerup', up); b.addEventListener('pointerleave', up);
   });
 }
+// ---------- brillo sin luz real: un sprite aditivo (las luces reales que aparecen y desaparecen obligan a recompilar todo) ----------
+let _glowTex;
+export function glowTex() {
+  if (_glowTex) return _glowTex;
+  const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.18, 'rgba(255,255,255,.6)'); g.addColorStop(.5, 'rgba(255,255,255,.12)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+  return (_glowTex = new THREE.CanvasTexture(c));
+}
+export function glow(color, s = 2) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), color: new THREE.Color(color), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); sp.scale.setScalar(s); return sp; }
+// ---------- compila todos los shaders antes de mostrar nada (sin esto, lo primero que aparece congela la página) ----------
+export function warm(renderer, scene, camera) {
+  const hidden = []; scene.traverse(o => { if (!o.visible) { hidden.push(o); o.visible = true; } });
+  let p; try { p = renderer.compileAsync ? renderer.compileAsync(scene, camera) : Promise.resolve(renderer.compile(scene, camera)); } catch (e) { p = Promise.resolve(); }
+  hidden.forEach(o => { o.visible = false; }); // compileAsync recorre la escena al llamarlo; ya se puede restaurar
+  return p.catch(() => {});
+}
+// ---------- nitidez que se ajusta sola para sostener 60 cuadros ----------
+export function autoRes(renderer, composer, { budget = 1.4e6, min = .5 } = {}) {
+  const cap = () => Math.min(devicePixelRatio || 1, 2); let pr = 1, ema = 16.7, n = 0, w = 0, h = 0;
+  const apply = () => { renderer.setPixelRatio(pr); composer?.setPixelRatio?.(pr); if (w) { renderer.setSize(w, h, false); composer?.setSize(w, h); } };
+  return {
+    size(W, H) { w = W; h = H; pr = Math.min(cap(), Math.sqrt(budget / Math.max(1, w * h))); apply(); },
+    tick(dt) { if (!dt || dt > 250) return; ema += (dt - ema) * .08; if (++n < 40) return; n = 0;
+      if (ema > 19 && pr > min) { pr = Math.max(min, pr * .85); apply(); } else if (ema < 14 && pr < Math.min(cap(), Math.sqrt(budget / Math.max(1, w * h)))) { pr = Math.min(cap(), pr * 1.08); apply(); } },
+    get pr() { return pr; }
+  };
+}
+
 export const lerp = (a, b, k) => a + (b - a) * k;
 export const clamp01 = x => Math.max(0, Math.min(1, x));
 export const seg = (p, a, b) => clamp01((p - a) / (b - a)); // progreso dentro de un tramo del scroll

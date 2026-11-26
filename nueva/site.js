@@ -18,7 +18,7 @@ addEventListener('scroll', onR, { passive: true }); onR();
 const V = [
   { tag: 'Música', theme: 'la música', q: '¿Qué harías un domingo si nadie en esta ciudad te conociera?', v: 'majo-say', s: 14, c: '#FF70A9', pk: [1.0,0.48,0.77,0.57,0.82,0.74,0.67,0.41,0.35,0.91,0.76,0.58,0.92,0.51,0.68,0.28,0.88,0.57,0.71,0.74,0.53,0.33,0.89,0.5,0.38,0.86,1.0,0.48] },
   { tag: 'Cine', theme: 'el cine', q: 'Me mudé a Lima hace tres meses y todavía no tengo con quién ir al cine.', v: 'leo-say', s: 13, c: '#8E8CFF', pk: [0.67,0.42,0.32,0.41,1.0,0.48,0.49,0.29,0.59,0.6,0.53,0.39,0.4,0.16,0.6,0.49,0.4,0.39,0.44,0.41,0.67,0.55,0.61,0.52,0.4,0.3,0.42,0.18] },
-  { tag: 'Atardeceres', theme: 'los atardeceres', q: '¿Cuál es el mejor atardecer que has visto en Lima?', v: 'caro-say', s: 13, c: '#FFB061', pk: [0.71,0.79,0.58,0.79,0.67,0.66,0.88,0.59,0.59,0.9,0.84,0.64,0.86,0.74,0.69,1.0,0.63,0.8,1.0,0.69,0.87,0.91,0.74,0.74,0.81,0.89,0.59,0.7] }
+  { tag: 'La ciudad', theme: 'la ciudad', q: '¿Cuál es el mejor atardecer que has visto en Lima?', v: 'caro-say', s: 13, c: '#FFB061', pk: [0.71,0.79,0.58,0.79,0.67,0.66,0.88,0.59,0.59,0.9,0.84,0.64,0.86,0.74,0.69,1.0,0.63,0.8,1.0,0.69,0.87,0.91,0.74,0.74,0.81,0.89,0.59,0.7] }
 ];
 const audio = new Audio(); let playing = null;
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
