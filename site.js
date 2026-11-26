@@ -171,6 +171,8 @@
 
   /* ---------- 8 orillas y la marea ---------- */
   const shore = $('#shore'), SVGNS = 'http://www.w3.org/2000/svg';
+  let renderShore = () => {};
+  if (shore) { // la sección 8 + 4 en SVG (ahora la cuenta la portada 3D)
   const C8 = ['#7FD8C9', '#FFC24B', '#8E8CFF', '#FF70A9', '#FFB061', '#9FE3B0', '#8E8CFF', '#FFC24B'];
   const hub = [200, 96], start = [24, 20];
   const P8 = C8.map((c, i) => [26 + i * 49.7, 128 + Math.sin(i * 1.3) * 12]);
@@ -188,7 +190,7 @@
   const flight = shore.querySelector('#flight'), FL = flight.getTotalLength(), sb = shore.querySelector('#sb');
   const p8 = [...shore.querySelectorAll('.p8')], p4 = [...shore.querySelectorAll('.p4')], o8 = [...shore.querySelectorAll('.o8')], o4 = [...shore.querySelectorAll('.o4')], tw = shore.querySelector('.tidewave');
   [...p8, ...p4].forEach(p => { const L = p.getTotalLength(); p.dataset.l = L; p.style.strokeDasharray = `${L} ${L}`; });
-  const renderShore = (p) => {
+  renderShore = (p) => {
     const f = clamp(p / .35), pt = flight.getPointAtLength(FL * (1 - Math.pow(1 - f, 2)));
     sb.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) rotate(${(-30 + f * 50).toFixed(0)})`);
     sb.style.opacity = p < .42 ? 1 : Math.max(0, 1 - (p - .42) * 10);
@@ -201,6 +203,7 @@
     o4.forEach((c, i) => { const t = clamp((p - .82 - i * .03) / .06); c.setAttribute('r', (6.5 * t).toFixed(2)); c.style.opacity = t * .8; });
   };
   renderShore(reduce ? 1 : 0);
+  }
 
   /* ---------- constelación y la cifra que cuenta ---------- */
   const cst = $('#const'); let cLines = [];
@@ -232,7 +235,7 @@
     lastY = y;
     let again = false;
     if (!reduce && y < hero.offsetHeight) { const hp = y / hero.offsetHeight; driftB.style.transform = `translate(${(hp * 70).toFixed(1)}px, ${(hp * 160).toFixed(1)}px) rotate(${(hp * 18).toFixed(1)}deg) scale(${(1 - hp * .35).toFixed(3)})`; sky.style.transform = `translateY(${(hp * 60).toFixed(1)}px)`; }
-    if (!reduce && near(shore)) renderShore(along(shore, .92, .25));
+    if (!reduce && shore && near(shore)) renderShore(along(shore, .92, .25));
     if (!reduce && cst && near(cst)) { const p = along(cst, 1, .3) * cLines.length; cLines.forEach((l, i) => l.style.strokeDashoffset = (+l.dataset.l * (1 - clamp(p - i * .8))).toFixed(1)); }
     if (near(ringSec)) again = renderRing(reduce ? 1 : along($('.ring-wrap'), .95, .4)) || again;
     if (!reduce && near(chatSec)) { const p = along(chatSec, .7, -.1); const k = Math.min(3, Math.floor(p * 4)); stages.forEach((s, i) => s.classList.toggle('on', i <= k)); }

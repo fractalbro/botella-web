@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es-PE">
+<html lang="es-PE" class="gl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -24,6 +24,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap">
 <link rel="stylesheet" href="/site.css">
+<script type="importmap">{"imports":{"three":"/3d/lib/three.module.min.js","three/addons/":"/3d/lib/jsm/"}}</script>
+<link rel="modulepreload" href="/3d/lib/three.core.min.js">
 </head>
 <body>
 
@@ -34,13 +36,15 @@
 
 <main id="top">
 
-  <!-- Portada: la noche de la app -->
-  <section class="hero" aria-labelledby="h1">
+  <!-- Historia 3D (mezcla Sueño + Faro): un solo mar detrás de cuatro capítulos -->
+  <div class="story" id="story">
+  <canvas class="gl" id="gl" aria-hidden="true"></canvas><div class="gl-scrim" aria-hidden="true"></div>
+  <section class="hero ch" aria-labelledby="h1">
     <svg class="sky" id="sky" aria-hidden="true"></svg>
     <div class="hero-bottle" aria-hidden="true"><div class="drift-b" id="drift-b"><div class="bob" id="hero-bottle"></div></div></div>
     <div class="hero-in wrap">
-      <h1 id="h1" class="d-xl">Lanza tu voz <span class="nb">al mar.</span></h1>
-      <p class="lead">Graba una pregunta. La escuchan ocho personas de Lima con tus gustos, y quien quiere te responde con su voz.</p>
+      <h1 id="h1" class="d-xl">Esta noche hay voces flotando.</h1>
+      <p class="lead">Graba una pregunta con tu voz. La escuchan ocho personas de Lima con tus gustos. Sin fotos: solo lo que dices.</p>
       <div class="ctas">
         <a class="btn btn-a" href="#entrar">Quiero mi botella</a>
         <button class="btn btn-2" type="button" data-play="majo"><span class="ico" data-ico="play"></span><span class="listen-t">Escuchar una botella</span></button>
@@ -49,10 +53,10 @@
   </section>
 
   <!-- Abrir una botella -->
-  <section class="sec open" id="voces" aria-labelledby="h-open">
+  <section class="sec open ch" id="voces" aria-labelledby="h-open">
     <div class="wrap open-in">
       <div class="open-copy">
-        <h2 id="h-open" class="d-lg">Así se siente abrir una.</h2>
+        <h2 id="h-open" class="d-lg">Ábrela. Alguien te habla.</h2>
         <p class="note">Estas son voces de ejemplo. Las de verdad te esperan adentro.</p>
         <div class="topics" role="tablist" aria-label="Elige una botella" id="topics"></div>
       </div>
@@ -71,6 +75,24 @@
       </div>
     </div>
   </section>
+
+  <!-- La luz encuentra tu botella (8 + 4) -->
+  <section class="sec reach ch" aria-labelledby="h-reach">
+    <div class="wrap">
+      <h2 id="h-reach" class="d-lg">La luz encuentra tu botella.</h2>
+      <p class="sec-p">Llega a 8 personas de Lima a las que les gusta lo mismo que a ti. Si en 6 horas nadie responde, llega a 4 más. Te conocen por lo que te gusta, nunca por tu distrito.</p>
+    </div>
+  </section>
+
+  <!-- La marea de las 21:00 -->
+  <section class="sec ch ch-tide" aria-labelledby="h-tide">
+    <div class="wrap">
+      <h2 id="h-tide" class="d-lg">A las 21:00 sube la marea.</h2>
+      <p class="sec-p">Cada noche llega a tu orilla una tanda nueva de voces. Y tienes una botella más para lanzar.</p>
+      <div class="ctas"><a class="btn btn-a" href="#entrar">Quiero mi botella</a></div>
+    </div>
+  </section>
+  </div>
 
   <!-- Anillo de voz -->
   <section class="sec ring-sec" id="voz" aria-labelledby="h-voz">
@@ -105,14 +127,6 @@
     </div>
   </section>
 
-  <!-- 8 personas y la marea -->
-  <section class="sec reach" aria-labelledby="h-reach">
-    <div class="wrap reach-in">
-      <h2 id="h-reach" class="d-lg">Te escuchan ocho. Si hace falta, la marea la lleva a cuatro más.</h2>
-      <div class="shore" id="shore" aria-hidden="true"></div>
-      <p class="sec-p">Tu botella llega a 8 personas de Lima a las que les gusta lo mismo que a ti. Si en 6 horas nadie responde, viaja a 4 orillas más. Te conocen por lo que te gusta, nunca por tu distrito.</p>
-    </div>
-  </section>
 
   <!-- Rituales -->
   <section class="sec rituals" aria-labelledby="h-rit">
@@ -242,7 +256,9 @@
 </footer>
 
 <audio id="au" preload="none"></audio>
+<script nomodule>document.documentElement.classList.remove("gl")</script>
 <script src="/config.js"></script>
 <script src="/site.js"></script>
+<script type="module" src="/3d/home.js"></script>
 </body>
 </html>

@@ -354,3 +354,25 @@ details p{margin:-6px 0 22px;color:var(--fg-2);max-width:56ch}
   .orb.near,.orb.far{opacity:1;transform:none}
 }
 .hero .sky{top:-80px;height:calc(100% + 80px);will-change:transform}
+
+/* ---------- historia 3D de la portada (3d/home.js): un solo mar detrás de cuatro capítulos ---------- */
+.story{position:relative}
+.story>.gl,.gl-scrim{display:none}
+html.gl .story>.gl{display:block;position:fixed;inset:0;width:100%;height:100lvh;z-index:0;opacity:0;transition:opacity .8s var(--out)}
+html.gl-on .story>.gl{opacity:1}
+html.gl .gl-scrim{display:block;position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(5,18,31,.66) 0,rgba(5,18,31,.42) 30%,rgba(5,18,31,.1) 50%,rgba(5,18,31,.88) 100%)}
+html.gl-off .story>.gl,html.gl-off .gl-scrim{visibility:hidden}
+html.gl .story .ch{position:relative;z-index:2;background:none}
+html.gl .hero .sky,html.gl .hero-bottle,html.gl .hero::after{display:none}
+html.gl .story .hero .d-xl{font-size:clamp(42px,11.6vw,96px);letter-spacing:-.05em}
+.story .reach,.story .ch-tide{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
+.story .ch-tide .ctas{margin-top:24px}
+.story .reach>.wrap,.story .ch-tide>.wrap{width:100%}
+html.gl .story .open{min-height:100svh}
+@media (min-width:900px){
+  html.gl .gl-scrim{background:linear-gradient(90deg,rgba(5,18,31,.72) 0,rgba(5,18,31,.2) 46%,rgba(5,18,31,0) 70%)}
+  .story .reach,.story .ch-tide{justify-content:center}
+  .story .reach .sec-p,.story .ch-tide .sec-p{max-width:40ch}
+  .story .reach .d-lg,.story .ch-tide .d-lg{max-width:11ch}
+}
+@media (prefers-reduced-motion:reduce){html.gl .story>.gl{transition:none}}
