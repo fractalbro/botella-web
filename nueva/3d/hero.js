@@ -16,7 +16,7 @@ else {
   const oc = ocean({ moonDir: [mpos.x, mpos.y, mpos.z], fog: '#0B2436', skyc: '#123552', fogNear: 40, fogFar: 300, amp: .8 }); oc.mesh.position.y = SEA; scene.add(oc.mesh);
   scene.add(new THREE.HemisphereLight('#9FD8E8', '#05121F', .45)); const key = new THREE.DirectionalLight('#EAF6F2', 1.4); key.position.copy(mpos); scene.add(key);
   // faro
-  const LX = MOB ? 16 : 40, LZ = -70;
+  const LX = MOB ? 22 : 40, LZ = -70;
   const rock = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 5), new THREE.MeshStandardMaterial({ color: '#14324A', roughness: .9 })); rock.scale.set(9, 3, 7); rock.position.set(LX, SEA - 1, LZ); scene.add(rock);
   const lh = new THREE.Group(); lh.position.set(LX, SEA + 1.4, LZ); scene.add(lh);
   const wht = new THREE.MeshStandardMaterial({ color: '#EFE9E1', roughness: .55 }), red = new THREE.MeshStandardMaterial({ color: '#E8585E', roughness: .55 });
