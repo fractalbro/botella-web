@@ -12,7 +12,7 @@ Adults (18+) in Lima who want to talk with someone new. The beta is invite-only,
 - Fight loneliness. The site opens with the opportunity, not the problem: "if one in six people feels lonely (WHO, 2025), nobody is as alone as they think."
 - A voice brings people closer than text. You are worth what you say, not how you look. No photos, no likes, no followers, no swiping.
 - Everyone has an account, but nobody sees your name at first. Before names, what shows is a shared topic ("someone who loves cinema"), never the district. Names appear only when both people put in their "key."
-- Rituals: the tide rises every night at 21:00, answering earns you one more bottle, the "lacre" seal is a gift, the key, and plans in public places.
+- Rituals: the tide rises every night at 21:00, answering earns you one more bottle, a gift bottle ("botella de regalo", never "lacre"), the key, and plans in public places.
 
 ## Surface: website (botella-web)
 - Job: explain the product in seconds, let people hear real sample voices, and sign them up. The sign-up uses Supabase `join_waitlist` and gives an access link right away while spots remain, then a waitlist. Each person gets their own invite link `?de=`.
