@@ -3,7 +3,7 @@
 Facts confirmed by Cesar (founder) in the project between Nov 15 and Nov 26, 2026. Nothing here is invented; open decisions are marked.
 
 ## What it is
-A voice app for Lima. You record a question or something you want to tell, up to 60 seconds, and "throw it into the sea." It reaches 8 people with similar tastes. If nobody answers within 6 hours, it reaches 4 more. Public copy never mentions the wait: say the bottle keeps reaching people until someone answers. Whoever wants to replies with their own voice. Voices are never modified.
+A voice app for Lima. You record a question or something you want to tell, up to 60 seconds, and "throw it into the sea." It reaches 12 people with similar tastes (30 for a "far" bottle). While nobody answers, it adds 6 more people every hour, with no cap. Public copy never mentions the wait: say the bottle keeps reaching people until someone answers. Whoever wants to replies with their own voice. Voices are never modified.
 
 ## Who it is for
 Adults (18+) in Lima who want to talk with someone new. The beta is invite-only, for the first 100 people.
