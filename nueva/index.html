@@ -11,10 +11,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap">
 <link rel="stylesheet" href="site.css">
-<script type="importmap">{"imports":{"three":"./3d/lib/three.module.min.js","three/addons/":"./3d/lib/jsm/"}}</script>
-<link rel="modulepreload" href="3d/lib/three.module.min.js">
-<link rel="modulepreload" href="3d/lib/three.core.min.js">
-<link rel="modulepreload" href="3d/kit.js">
+<link rel="preload" as="image" href="img/hero-cine.jpg" media="(min-width: 760px)">
+<link rel="preload" as="image" href="img/hero-cine-v.jpg" media="(max-width: 759px)">
 </head>
 <body>
 <header class="bar">
@@ -24,7 +22,7 @@
 
 <main id="top">
   <section class="hero" id="hero">
-    <div class="pin"><canvas id="gl" aria-hidden="true"></canvas><div class="shade"></div></div>
+    <div class="pin"><div class="cineimg" id="cine" aria-hidden="true"></div><div class="shade"></div></div>
     <div class="ch ch1 wrap">
       <h1 class="d1">Conoce gente<br><span class="lt">por su voz.</span></h1>
       <p class="lead">Botella es una app de Lima. Grabas una pregunta con tu voz y le llega a toda la gente con tus mismos gustos.</p>
@@ -102,6 +100,5 @@
 </footer>
 
 <script src="site.js"></script>
-<script type="module" src="3d/hero.js"></script>
 </body>
 </html>

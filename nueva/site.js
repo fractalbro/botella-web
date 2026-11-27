@@ -14,6 +14,44 @@ const dots = $$('i', reach);
 const onR = () => { const p = Math.max(0, Math.min(1, scrollY / (hero.offsetHeight * .9))); dots.forEach((d, i) => d.classList.toggle('on', p > .45 + i * .018)); };
 addEventListener('scroll', onR, { passive: true }); onR();
 
+// portada: foto cinematográfica viva (sin 3D). Al bajar, la cámara se acerca despacio a la botella.
+// Foto viva: sobre una imagen fija se animan solo las luces (olas bioluminiscentes, estrellas, brillo de la luna y la luz dentro de la botella).
+// Las posiciones van en fracciones de la imagen; se recalculan con background-size: cover anclado arriba.
+const CINE = {
+  hero: { src: 'img/hero.jpg', w: 864, h: 1536, glow: [0.46, 0.39, 0.13], band: [0.23, 0.37], moon: [0.81, 0.105], stars: 0.2 },
+  abrir: { src: 'img/abrir.jpg', w: 864, h: 1536, glow: [0.44, 0.35, 0.12], band: [0.22, 0.44], moon: [0.81, 0.085], stars: 0.19 },
+  lanzada: { src: 'img/lanzada.jpg', w: 864, h: 1536, glow: [0.385, 0.355, 0.05], band: [0.36, 0.6], bandX: [0.22, 0.6], moon: [0.585, 0.205], stars: 0.22 },
+  web: { src: 'img/hero-cine.jpg', w: 1536, h: 864, glow: [0.72, 0.68, 0.09], band: [0.4, 0.66], moon: [0.84, 0.13], stars: 0.35, pos: 'center' },
+  webv: { src: 'img/hero-cine-v.jpg', w: 864, h: 1536, glow: [0.46, 0.39, 0.13], band: [0.23, 0.37], moon: [0.81, 0.105], stars: 0.2 }
+};
+const cineLive = (host, key) => {
+  const C = CINE[key], cv = document.createElement('canvas'), cx = cv.getContext('2d'); cv.className = 'cinecv'; host.appendChild(cv);
+  host.style.backgroundImage = `url(${C.src})`; if (C.pos) host.style.backgroundPosition = C.pos;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches; let raf = 0, P = [], S = [], G = [], boost = 0, flash = 0, W = 0, H = 0, sc = 1, ox = 0, oy = 0;
+  const map = (fx, fy) => [ox + fx * C.w * sc, oy + fy * C.h * sc];
+  const size = () => { const r = Math.min(devicePixelRatio || 1, 2); W = host.clientWidth; H = host.clientHeight; if (!W) return; cv.width = W * r; cv.height = H * r; cx.setTransform(r, 0, 0, r, 0, 0);
+    sc = Math.max(W / C.w, H / C.h); ox = (W - C.w * sc) / 2; oy = C.pos === 'center' ? (H - C.h * sc) / 2 : 0;
+    const bx = C.bandX || [0, 1], rnd = (a, b) => a + Math.random() * (b - a);
+    P = Array.from({ length: Math.round(W * (C.band[1] - C.band[0]) * C.h * sc / 900) + 40 }, () => ({ fx: rnd(bx[0], bx[1]), fy: rnd(C.band[0], C.band[1]), p: Math.random() * 6.3, s: .6 + Math.random() * 1.6, z: .6 + Math.random() * 1.8, d: (Math.random() - .5) * .012 }));
+    S = Array.from({ length: 70 }, () => ({ fx: Math.random(), fy: Math.random() * C.stars, p: Math.random() * 6.3, s: .3 + Math.random() * .9, z: .4 + Math.random() }));
+    G = Array.from({ length: 26 }, () => ({ dx: (Math.random() - .5) * .05, fy: rnd(C.moon[1] + .1, Math.min(C.band[1] + .05, C.moon[1] + .5)), p: Math.random() * 6.3, s: 1 + Math.random() * 2 })); };
+  const dot = (x, y, r, col, a) => { const g = cx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(${col},${a})`); g.addColorStop(1, `rgba(${col},0)`); cx.fillStyle = g; cx.fillRect(x - r, y - r, r * 2, r * 2); };
+  const draw = t => { t /= 1000; cx.clearRect(0, 0, W, H); cx.globalCompositeOperation = 'lighter';
+    for (const q of S) { const a = Math.max(0, Math.sin(t * q.s + q.p)) ** 6 * .9; if (a < .03) continue; const [x, y] = map(q.fx, q.fy); dot(x, y, 2.2 * q.z, '235,245,255', a); }
+    for (const q of G) { const a = Math.max(0, Math.sin(t * q.s + q.p)) ** 8 * .8; if (a < .03) continue; const [x, y] = map(C.moon[0] + q.dx * (q.fy - C.moon[1]) * 4, q.fy); dot(x, y, 3, '255,236,200', a); }
+    for (const q of P) { const a = Math.max(0, Math.sin(t * q.s + q.p)) ** 4 * (.55 + boost * .4); if (a < .03) continue; const [x, y] = map(q.fx + Math.sin(t * .4 + q.p) * q.d, q.fy); dot(x, y, 3.2 * q.z, '127,232,214', a); }
+    const [gx, gy] = map(C.glow[0], C.glow[1]), gr = C.glow[2] * C.w * sc, br = .22 + .12 * Math.sin(t * 1.3) + boost * .45 + flash;
+    dot(gx, gy, gr * (1 + boost * .5 + flash * 2), '127,216,201', Math.min(1, br));
+    if (flash > 0) flash = Math.max(0, flash - .012);
+    cx.globalCompositeOperation = 'source-over'; };
+  const loop = t => { if (!document.body.contains(cv)) return; if (host.clientWidth !== W || host.clientHeight !== H) size(); if (W) draw(t); raf = still ? 0 : requestAnimationFrame(loop); };
+  raf = requestAnimationFrame(loop);
+  return { boost: v => { boost = v; }, flash: () => { flash = .9; } };
+};
+const cineEl = $('#cine'); cineLive(cineEl, innerWidth < 760 ? 'webv' : 'web');
+const onC = () => { const p = Math.max(0, Math.min(1, scrollY / (hero.offsetHeight * .9))); cineEl.style.transform = `scale(${(1.02 + p * .14).toFixed(4)})`; cineEl.style.filter = `brightness(${(1 - p * .35).toFixed(3)})`; };
+addEventListener('scroll', onC, { passive: true }); onC();
+
 // voces de ejemplo
 const V = [
   { tag: 'Música', theme: 'la música', q: '¿Qué harías un domingo si nadie en esta ciudad te conociera?', v: 'majo-say', s: 14, c: '#FF70A9', pk: [1.0,0.48,0.77,0.57,0.82,0.74,0.67,0.41,0.35,0.91,0.76,0.58,0.92,0.51,0.68,0.28,0.88,0.57,0.71,0.74,0.53,0.33,0.89,0.5,0.38,0.86,1.0,0.48] },
