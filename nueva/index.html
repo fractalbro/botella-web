@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+<meta charset="utf-8">
+<script>if(/\/nueva$/.test(location.pathname))location.replace(location.pathname+"/"+location.search+location.hash)</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Botella · Conoce gente por su voz</title>
+<meta name="description" content="Botella es una app de Lima para conocer gente por su voz. Grabas una pregunta y le llega a toda la gente con tus mismos gustos. Sin fotos.">
+<meta name="theme-color" content="#05121F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="site.css">
+<link rel="preload" as="image" href="img/hero-cine.jpg" media="(min-width: 760px)">
+<link rel="preload" as="image" href="img/hero-cine-v.jpg" media="(max-width: 759px)">
+</head>
+<body>
+<header class="bar">
+  <a class="wm" href="#top">botella</a>
+  <nav><a class="lnk" href="https://botella-app.vercel.app/">Entrar</a><a class="pill" href="#entrar">Pedir mi lugar</a></nav>
+</header>
+
+<main id="top">
+  <section class="hero" id="hero">
+    <div class="pin"><div class="cineimg" id="cine" aria-hidden="true"></div><div class="shade"></div></div>
+    <div class="ch ch1 wrap">
+      <h1 class="d1">Conoce gente<br><span class="lt">por su voz.</span></h1>
+      <p class="lead">Botella es una app de Lima. Grabas una pregunta con tu voz y le llega a toda la gente con tus mismos gustos.</p>
+      <div class="ctas"><a class="btn btn-a" href="#entrar">Pedir mi lugar</a><button class="btn btn-2" data-play="majo-say" type="button"><span class="pi"></span>Escuchar un ejemplo</button></div>
+    </div>
+    <div class="ch ch2 wrap">
+      <h2 class="d2">Tu botella llega<br><span class="lt">a toda la gente que puede.</span></h2>
+      <div class="reach" id="reach" aria-hidden="true"></div>
+      <p class="lead">A todas las personas a quienes les gusta lo mismo que a ti. Y sigue llegando a más hasta que alguien te responde.</p>
+    </div>
+  </section>
+
+  <section class="band steps" aria-labelledby="h-steps">
+    <div class="wrap">
+      <h2 id="h-steps" class="d2">Así funciona. <span class="lt">Tres pasos.</span></h2>
+      <ol class="three">
+        <li><figure><img src="img/grabar.png" alt="Pantalla de grabar una botella" loading="lazy" width="375" height="629"></figure><h3>Graba tu voz.</h3><p>Una pregunta, una confesión o una historia de hasta un minuto.</p></li>
+        <li><figure><img src="img/abrir.png" alt="Pantalla de una botella abierta, con la pregunta en papel" loading="lazy" width="375" height="629"></figure><h3>Escucha a otros.</h3><p>Te llegan las botellas de otras personas. Respondes la que quieras, también con tu voz.</p></li>
+        <li><figure><img src="img/chat.png" alt="Pantalla de una conversación por pasos" loading="lazy" width="375" height="629"></figure><h3>Conócelos.</h3><p>Primero se hablan con notas de voz. Sus nombres aparecen solo si los dos lo deciden.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band listen" aria-labelledby="h-listen">
+    <div class="wrap split">
+      <div>
+        <h2 id="h-listen" class="d2">Escucha<br><span class="lt">una botella.</span></h2>
+        <div class="topics" role="tablist" id="topics"></div>
+        <p class="note">Son voces de ejemplo. Las de personas reales están en la app.</p>
+      </div>
+      <article class="paper" id="paper" aria-live="polite">
+        <p class="who" id="who"></p>
+        <p class="q" id="q"></p>
+        <button class="player" id="player" type="button" aria-label="Escuchar esta botella"><span class="pb"></span><span class="wave" id="wave"></span><span class="t" id="t"></span></button>
+      </article>
+    </div>
+  </section>
+
+  <section class="band nots" aria-labelledby="h-nots">
+    <div class="wrap">
+      <p class="note">En Botella no hay</p>
+      <ul class="struck" aria-hidden="true"><li>Fotos</li><li>Likes</li><li>Dónde vives</li></ul>
+      <h2 id="h-nots" class="d2 mt">En Botella vales<br><span class="lt">por lo que dices.</span></h2>
+    </div>
+  </section>
+
+  <section class="band why" aria-labelledby="h-why">
+    <div class="wrap">
+      <p class="big" id="h-why">Una de cada seis personas se siente sola.<br><span class="lt">Botella hace fácil hablar con alguien nuevo.</span></p>
+      <p class="note">Organización Mundial de la Salud, 2025.</p>
+    </div>
+  </section>
+
+  <section class="band join" id="entrar" aria-labelledby="h-join">
+    <div class="wrap narrow">
+      <h2 id="h-join" class="d2">Empezamos en Lima<br><span class="lt">con cien personas.</span></h2>
+      <p class="lead" id="left">Déjanos tu nombre y te guardamos un lugar en la app.</p>
+      <form id="f" class="form" novalidate>
+        <label><span>Tu nombre</span><input name="name" required autocomplete="given-name"></label>
+        <label><span>Celular</span><input name="phone" type="tel" inputmode="tel" required autocomplete="tel" placeholder="9XX XXX XXX"></label>
+        <label class="ck"><input type="checkbox" name="age" required> Tengo 18 años o más</label>
+        <button class="btn btn-a" type="submit">Guardar mi lugar</button>
+        <p class="err" id="err" hidden></p>
+      </form>
+      <div class="done" id="done" hidden></div>
+      <p class="acc">¿Ya tienes cuenta? <a href="https://botella-app.vercel.app/">Entrar</a> · <a href="https://botella-app.vercel.app/?olvide=1">Olvidé mi contraseña</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot wrap">
+  <span class="wm">botella</span>
+  <span>Hecho en Lima.</span>
+  <nav><a href="https://botella-app.vercel.app/">Entrar</a><a href="https://botella-app.vercel.app/?olvide=1">Olvidé mi contraseña</a></nav>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>
