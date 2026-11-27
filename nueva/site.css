@@ -49,7 +49,7 @@ button,input{font:inherit;color:inherit}
 .ch{position:absolute;left:0;right:0}
 .ch1{top:0;height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center}
 .ch2{top:120vh;height:100vh;display:flex;flex-direction:column;justify-content:center}
-.reach{display:flex;gap:10px;align-items:center;margin-top:28px}
+.reach{display:flex;flex-wrap:wrap;max-width:330px;gap:10px;align-items:center;margin-top:28px}
 .reach i{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--fg3);transition:background .5s var(--in),box-shadow .5s,transform .5s var(--in)}
 .reach i.on{background:var(--a);box-shadow:0 0 18px rgba(127,216,201,.6);transform:scale(1.08)}
 .reach i.later{box-shadow:inset 0 0 0 1.5px rgba(255,231,176,.4)}
