@@ -185,7 +185,7 @@
   P8.forEach(([x, y], i) => g += `<circle class="o8" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="11" fill="url(#og${C8[i].slice(1)})"/>`);
   P4.forEach(([x, y]) => g += `<circle class="o4" cx="${x}" cy="${y}" r="6.5" fill="url(#og7FD8C9)"/>`);
   g += `<g id="sb"><g transform="scale(.32) translate(-60 -20)"><path d="M16 6h56q14 0 18 8h18v12H90q-4 8-18 8H16q-10 0-10-14T16 6z" fill="rgba(127,216,201,.3)" stroke="rgba(170,240,228,.95)" stroke-width="3"/><rect x="22" y="14" width="48" height="12" rx="5" fill="#F6E7C4"/><rect x="108" y="15" width="8" height="10" fill="#8A5A33"/></g></g></svg>`;
-  g += `<div class="lbls"><span class="lbl">8 personas con tus gustos</span><span class="lbl">y más, hasta que alguien responda</span></div>`;
+  g += `<div class="lbls"><span class="lbl">12 personas con tus gustos</span><span class="lbl">y más, hasta que alguien responda</span></div>`;
   shore.innerHTML = g;
   const flight = shore.querySelector('#flight'), FL = flight.getTotalLength(), sb = shore.querySelector('#sb');
   const p8 = [...shore.querySelectorAll('.p8')], p4 = [...shore.querySelectorAll('.p4')], o8 = [...shore.querySelectorAll('.o8')], o4 = [...shore.querySelectorAll('.o4')], tw = shore.querySelector('.tidewave');
@@ -261,7 +261,7 @@
 
   const form = $('#form'), err = $('#err'), go = $('#go'), adult = $('#adult'), goT = go.querySelector('span');
   adult.addEventListener('click', () => adult.setAttribute('aria-checked', adult.getAttribute('aria-checked') !== 'true'));
-  const shareText = invite => `Te mando una botella 🌊 Es una app de Lima donde grabas una pregunta con tu voz y ocho personas con tus mismos gustos la escuchan. Sin fotos. Entra aquí: ${location.origin}/${invite ? '?de=' + invite : ''}`;
+  const shareText = invite => `Te mando una botella 🌊 Es una app de Lima donde grabas una pregunta con tu voz y 12 personas con tus mismos gustos la escuchan. Sin fotos. Entra aquí: ${location.origin}/${invite ? '?de=' + invite : ''}`;
   const show = r => {
     form.hidden = true; $('.sheet-head').hidden = true; $('#done').hidden = false;
     const first = (r.name || '').split(' ')[0];
