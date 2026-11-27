@@ -9,7 +9,7 @@ const bar = $('.bar'); const onS = () => bar.classList.toggle('solid', scrollY >
 
 // 8 + 4 puntos ligados al scroll de la portada
 const hero = $('#hero'), reach = $('#reach');
-reach.innerHTML = '<i></i>'.repeat(8) + '<span class="sep"></span>' + '<i class="later"></i>'.repeat(4);
+reach.innerHTML = '<i></i>'.repeat(8);
 const dots = $$('i', reach);
 const onR = () => { const p = Math.max(0, Math.min(1, scrollY / (hero.offsetHeight * .9))); dots.forEach((d, i) => d.classList.toggle('on', i < 8 ? p > .5 + i * .03 : p > .78 + (i - 8) * .03)); };
 addEventListener('scroll', onR, { passive: true }); onR();
